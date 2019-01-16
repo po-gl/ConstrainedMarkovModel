@@ -19,6 +19,7 @@ ConstrainedMarkovModel::ConstrainedMarkovModel() {
   randDistribution = uniform_real_distribution<double>(0.0, 1.0);
 }
 
+
 void ConstrainedMarkovModel::train(string filePath) {
   vector< vector<string> > trainingSequences = readInTrainingSentences(filePath); 
 
@@ -118,7 +119,8 @@ double ConstrainedMarkovModel::calculateProbability(vector<string> sentence) {
 }
 
 
-void ConstrainedMarkovModel::printTransitionProbs(unordered_map< string, unordered_map<string, double> > probs) {
+void ConstrainedMarkovModel::printTransitionProbs() {
+  auto probs = transitionProbs;
   for (const auto &firstWord : probs) {
     printf("%20s >>> ", firstWord.first.c_str());
     for (const auto &nextWord : firstWord.second) {

@@ -9,3 +9,7 @@ CMakeLists.txt
 
 # output
 a.out
+
+# doxygen
+html/
+latex/
