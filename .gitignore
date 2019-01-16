@@ -1,0 +1,11 @@
+# Clion make files
+.idea/
+a.out.dSYM/
+cmake-build-debug/
+CMakeLists.txt
+
+# vscode
+.vscode/
+
+# output
+a.out
