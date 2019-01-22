@@ -13,3 +13,6 @@ a.out
 # doxygen
 html/
 latex/
+
+# Macos
+.DS_STORE
