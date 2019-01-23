@@ -20,4 +20,18 @@ using namespace std;
  **/
 vector<string> split(string st, string delims);
 
+/**
+ * Splits a string along delimiters and lower characters
+ * heavily utilizes regular expressions
+ * 
+ * delims: string of delimiters 
+ *    example: \\s would split on whitespace
+ *             \\s.,?! would split on whitespace and some punctuation
+ * 
+ * Returns vector string representing the words that were split up
+ * 
+ * Porter Glines 1/22/19
+ **/
+vector<string> splitAndLower(string st, string delims);
+
 #endif
