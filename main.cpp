@@ -3,9 +3,11 @@
 
 using namespace std;
 
+// TODO: Use proper data instead of Gutenburg books
+
 
 void printHelp() {
-  printf("usage: markov [--debug] training_text\n");
+  printf("usage: markov [--debug] -c constraint training_text\n");
 }
 
 
@@ -13,6 +15,7 @@ int main(int argc, char *argv[]) {
 
   // Set default values
   bool debug = false;
+  string constraint;
   string trainingFilePath;
 
   // Parse Arguments
@@ -21,6 +24,11 @@ int main(int argc, char *argv[]) {
       debug = true;
     } else if (strncmp(argv[i], "help", 4) == 0) {
       printHelp();
+      return 0;
+    } else if (strncmp(argv[i], "-c", 2) == 0) {
+      if (i+1 < argc) {
+        constraint = argv[++i];
+      }
     } else {
       trainingFilePath = argv[i];
     }
@@ -30,11 +38,15 @@ int main(int argc, char *argv[]) {
     printf("Training text is needed.\n");
     printHelp();
     return 0;
+  } else if (constraint.empty()) {
+    printf("Constraint is needed.\n");
+    printHelp();
+    return 0;
   }
 
 
   ConstrainedMarkovModel model;
-  model.train(trainingFilePath);
+  model.train(trainingFilePath, constraint);
 
    printf("Generated Sentence:\n    ");
    for (string word : model.generateSentence()) {
