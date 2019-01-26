@@ -41,6 +41,18 @@ public:
    */
   vector<string> generateSentence();
 
+
+  /**
+   * @brief Get the probability of a specific sentence being generated
+   * 
+   * multiplies the probabilities between each word to get the total
+   * probability of a sentence
+   * 
+   * @param sentence generated sentence
+   * @return double probability of the given sentence
+   */
+  double getSentenceProbability(vector<string> sentence);
+
   /**
    * @brief Get the length the model has trained on
    * 

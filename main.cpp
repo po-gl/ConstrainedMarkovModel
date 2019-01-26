@@ -48,10 +48,13 @@ int main(int argc, char *argv[]) {
   ConstrainedMarkovModel model;
   model.train(trainingFilePath, constraint);
 
-   printf("Generated Sentence:\n    ");
-   for (string word : model.generateSentence()) {
-     printf("%s ", word.c_str());
-   }
-   printf("\n\n");
+  vector<string> sentence = model.generateSentence();
+
+  printf("Generated Sentence:\n    ");
+  for (string word : sentence) {
+    printf("%s ", word.c_str());
+  }
+  printf("\n");
+  printf("Sentence probability: %f\n\n", model.getSentenceProbability(sentence));
   return 0;
 }

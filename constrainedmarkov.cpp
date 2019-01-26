@@ -11,6 +11,9 @@
 
 using namespace std;
 
+// TODO: Implement prior probablities for START (word frequency)
+
+// TODO: add better constraints (POS)
 
 // TODO: Templates for non-string use cases
 
@@ -203,6 +206,30 @@ vector<string> ConstrainedMarkovModel::generateSentence() {
   }
 
   return sentence;
+}
+
+
+double ConstrainedMarkovModel::getSentenceProbability(vector<string> sentence) {
+  double prob = 1.0;
+
+  string currWord;
+  string nextWord;
+
+  // transitionMatrices length should be sentence length + 1
+  // with transitionMatrices[0] being the matrix for START
+  for (int i = 0; i < sentenceLength; i++) {
+    auto currentMatrix = transitionMatrices[i];
+    if (i == 0) {
+      currWord = START;
+      nextWord = sentence[i];
+    } else {
+      currWord = sentence[i-1];
+      nextWord = sentence[i];
+    }
+
+    prob *= currentMatrix[currWord][nextWord];
+  }
+  return prob;
 }
 
 
