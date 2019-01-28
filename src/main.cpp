@@ -1,5 +1,5 @@
 #include <iostream>
-#include "constrainedmarkov.h"
+#include "mnemonicmarkov.h"
 
 using namespace std;
 
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   }
 
 
-  ConstrainedMarkovModel model;
+  MnemonicMarkovModel model;
   model.train(trainingFilePath, constraint);
 
   vector<string> sentence = model.generateSentence();

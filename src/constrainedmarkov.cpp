@@ -13,17 +13,9 @@ using namespace std;
 
 // TODO: add better constraints (POS)
 
-// TODO: NHMM should work with words, not sentences (vector<string> instead of vector< vector<string> >)
+// TODO: NHMM should work with words, not sentences >>> or, constraints could be added for a "beginning" and "end" to a mnemonic
 
 // TODO: Templates for non-string use cases
-
-ConstrainedMarkovModel::ConstrainedMarkovModel() {
-  // Initialize random
-  random_device rd;
-  randGenerator = mt19937(rd());
-  randDistribution = uniform_real_distribution<double>(0.0, 1.0);
-}
-
 
 void ConstrainedMarkovModel::train(string filePath, string constraint) {
   this->sentenceLength = (int)constraint.size();
@@ -72,25 +64,6 @@ void ConstrainedMarkovModel::increment(unordered_map< string, unordered_map<stri
     foundProb->second += 1.0;
   } else {
     innerMap->insert(make_pair(nextWord, 1.0));
-  }
-}
-
-
-void ConstrainedMarkovModel::applyConstraints(string constraint) {
-  // TODO: Specific NHMM class for specific problem; implementing just this method
-
-  for (int i = 0; i < constraint.size(); i++) {
-
-    // auto matrix = transitionMatrices[i];
-    for (auto iter = transitionMatrices[i].begin(); iter != transitionMatrices[i].end();) {
-      // Remove nodes that don't satisfy the constraint 
-      // (letter in constraint string == first letter of word)
-      if (constraint[i] != iter->first[0]) {
-        iter = transitionMatrices[i].erase(iter);
-      } else {
-        iter++;
-      }
-    }
   }
 }
 
@@ -244,31 +217,6 @@ string ConstrainedMarkovModel::getNextWord(string prevWord, int wordIndex) {
     }
   }
   return "";  // TODO: throw error
-}
-
-
-vector< vector<string> > ConstrainedMarkovModel::readInTrainingSentences(string filePath) {
-  vector< vector<string> > data;
-
-  ifstream file;
-  stringstream buffer;
-  file.open(filePath, ios::in);
-  
-  if (file.is_open()) {
-    buffer << file.rdbuf();
-  } else {
-    printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
-  }
-  // Split the line along delimiters for sentences
-  vector<string> sentences = splitAndLower(buffer.str(), ".?!");
-
-  // Split up words in sentences
-  for (const string &sentence : sentences) {
-    data.push_back(split(sentence, "\\s,;:\"\\(\\)"));
-  }
-
-  file.close();
-  return data;
 }
 
 

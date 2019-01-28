@@ -15,7 +15,7 @@ using namespace std;
 class ConstrainedMarkovModel {
 public:
   
-  ConstrainedMarkovModel();
+  ConstrainedMarkovModel() {};
   ~ConstrainedMarkovModel() {};
 
   /**
@@ -63,22 +63,22 @@ public:
    */
   int getSentenceLength() { return sentenceLength; }
 
-  // TODO: Move to utils.cpp and make more generic
   /**
    * @brief Read in training text into an array of sentences made up of arrays of words
+   * 
+   * This is a pure virtual function
    * 
    * @param filePath path to training text
    * @return vector< vector<string> > array of sentences made up of arrays of words
    */
-  vector< vector<string> > readInTrainingSentences(string filePath);
+  virtual vector< vector<string> > readInTrainingSentences(string filePath) = 0;
 
   /**
    * @brief Print the transition probabilities for debugging
    */
   void printTransitionProbs();
 
-
-private:
+protected:
   /// Marker representing the start of a sentence
   const string START = "<<START>>";
   /// Marker representing the end of a sentence
@@ -86,37 +86,30 @@ private:
 
   int sentenceLength;
 
+  /// Random generator
+  mt19937 randGenerator;
+  /// Random distribution used by the generator
+  uniform_real_distribution<double> randDistribution;
+
+  /// Transition probability matrices between words
+  vector< unordered_map< string, unordered_map<string, double> > > transitionMatrices;
+
+private:
   /// Stores training sentences used to train the model
   vector< vector<string> > trainingSequences;
 
   /// Original transition probability matrices mapping words -> (word, prob), (word, prob)...
   unordered_map< string, unordered_map<string, double> > transitionProbs;
 
-  /// Transition probability matrices between words
-  vector< unordered_map< string, unordered_map<string, double> > > transitionMatrices;
-
-  /// Random generator
-  mt19937 randGenerator;
-  /// Random distribution used by the generator
-  uniform_real_distribution<double> randDistribution;
-
-  // TODO: Move to inherited class and make a abstract in this class
   /**
-   * @brief Apply a constraint to the transition matrices by
-   * deleting nodes that violate the constraint.
+   * @brief Apply constraints to the transition matrices
    * 
-   * The constraint is given as a string that represents
-   * the required first characters in order of chosen
-   * words
+   * Modify (delete) nodes int transitionMatrices[] that violate 
+   * the constraint rules.
    * 
-   * e.g. constraint="twd" constrains the model to only
-   * generate words starting with "T", "W", and "D" such as
-   * "The weather door"
-   * 
-   * @param constraint required first letters
-   * @author Porter Glines 1/21/19
+   * This is a pure virtual function
    */
-  void applyConstraints(string constraint);
+  virtual void applyConstraints(string constraint) = 0;
 
   /**
    * @brief Remove nodes that violate arc consistency
