@@ -2,7 +2,7 @@
 #include <vector>
 #include <regex>
 #include <algorithm>
-#include "util.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -11,7 +11,7 @@ using namespace std;
  * uses Regular expressions for splitting
  * Porter Glines 1/7/19
  **/
-vector<string> split(string str, string delims) {
+vector<string> Utils::split(string str, string delims) {
   vector<string> ret;
 
   regex wordsExp("[^" + delims + "]+");
@@ -32,7 +32,7 @@ vector<string> split(string str, string delims) {
  * uses Regular expressions for splitting
  * Porter Glines 1/7/19
  **/
-vector<string> splitAndLower(string str, string delims) {
+vector<string> Utils::splitAndLower(string str, string delims) {
   vector<string> ret;
 
   regex wordsExp("[^" + delims + "]+");
