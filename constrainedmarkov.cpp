@@ -11,9 +11,9 @@
 
 using namespace std;
 
-// TODO: Implement prior probablities for START (word frequency)
-
 // TODO: add better constraints (POS)
+
+// TODO: NHMM should work with words, not sentences (vector<string> instead of vector< vector<string> >)
 
 // TODO: Templates for non-string use cases
 
@@ -26,11 +26,11 @@ ConstrainedMarkovModel::ConstrainedMarkovModel() {
 
 
 void ConstrainedMarkovModel::train(string filePath, string constraint) {
-  this->sentenceLength = constraint.size();
-  vector< vector<string> > trainingSequences = readInTrainingSentences(filePath); 
+  this->sentenceLength = (int)constraint.size();
+  this->trainingSequences = readInTrainingSentences(filePath); 
 
   // iterate over sentences
-  for (vector<string> sentence : trainingSequences) {
+  for (vector<string> sentence : this->trainingSequences) {
     // iterate over sentence words
     for (int i = 0; i < sentence.size(); i++) {
       string prevWord = (i == 0) ? START : sentence[i - 1];
@@ -42,8 +42,6 @@ void ConstrainedMarkovModel::train(string filePath, string constraint) {
       increment(transitionProbs, sentence[sentence.size() - 1], END);
     }
   }
-
-  // TODO: Should the Mnemonic train on start and end transition tables? do we care if the sequence of words starts/ends a sentence?
 
   // copy matrices for each word (note that START is added later, see addStartTransition())
   for (int i = 0; i < sentenceLength; i++) {
@@ -81,9 +79,6 @@ void ConstrainedMarkovModel::increment(unordered_map< string, unordered_map<stri
 void ConstrainedMarkovModel::applyConstraints(string constraint) {
   // TODO: Specific NHMM class for specific problem; implementing just this method
 
-  // HARDCODED
-  // string constraint = "twd";  // The weather door (smalltest.txt)
-
   for (int i = 0; i < constraint.size(); i++) {
 
     // auto matrix = transitionMatrices[i];
@@ -102,7 +97,7 @@ void ConstrainedMarkovModel::applyConstraints(string constraint) {
 
 void ConstrainedMarkovModel::removeDeadNodes() {
   // Enforce arc-consistency
-  for (int i = transitionMatrices.size() - 1; i > 0; i--) {
+  for (int i = (int)transitionMatrices.size() - 1; i > 0; i--) {
 
     // TODO: make more efficient and/or clear with graph data structure
     // This is a tree structured CSP, so no backtracking is needed
@@ -124,7 +119,7 @@ void ConstrainedMarkovModel::removeDeadNodes() {
       }
 
       // Remove a node if there are no edges coming out of it
-      if (prevWordMap->size() == 0) {
+      if (prevWordMap->empty()) {
         iter = prevWordMatrix->erase(iter);
       } else {
         iter++;
@@ -138,7 +133,7 @@ void ConstrainedMarkovModel::normalize() {
 
   double prevSum = 1.0;
 
-  for (int i = transitionMatrices.size() - 1; i >= 0; i--) {
+  for (int i = (int)transitionMatrices.size() - 1; i >= 0; i--) {
 
     auto *transitionMap = &transitionMatrices[i];
 
@@ -170,15 +165,18 @@ void ConstrainedMarkovModel::normalize() {
 
 
 void ConstrainedMarkovModel::addStartTransition() {
+  // Word frequencies are used as the prior probabilities
+  unordered_map<string, int> wordFrequencies = getWordFrequencies(this->trainingSequences);
+
   // create new matrix with start as the only node to all the other transitionMatrices[1] firsts
   // then insert the new start matrix at the front of transitionMatrices
   unordered_map< string, unordered_map<string, double> > startTransition;
 
   unordered_map<string, double> innerStartMap;
-  for (const auto map : transitionMatrices[0]) {
-    // Equal probaility for all starting words
-    // TODO: Weight starting probabilities by frequency?
-    innerStartMap.insert(make_pair(map.first, 1.0));
+  // transitionMatrices[0] represents the possible starting words (not START yet)
+  for (const auto &map : transitionMatrices[0]) {
+    // starting probabilities determined frequency
+    innerStartMap.insert(make_pair(map.first, wordFrequencies[map.first]));
   }
   startTransition.insert(make_pair(START, innerStartMap));
 
@@ -289,6 +287,18 @@ double ConstrainedMarkovModel::calculateProbability(vector<string> sentence) {
     prob *= transitionProbs[prevWord][currWord];
   }
   return prob;
+}
+
+
+unordered_map<string, int> ConstrainedMarkovModel::getWordFrequencies(vector< vector<string> > sentences) {
+  unordered_map<string, int> frequencies;
+
+  for (const auto &sentence : sentences) {
+    for (const auto &word : sentence) {
+      frequencies[word]++;
+    }
+  }
+  return frequencies;
 }
 
 

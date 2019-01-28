@@ -83,6 +83,9 @@ private:
 
   int sentenceLength;
 
+  /// Stores training sentences used to train the model
+  vector< vector<string> > trainingSequences;
+
   /// Original transition probability matrices mapping words -> (word, prob), (word, prob)...
   unordered_map< string, unordered_map<string, double> > transitionProbs;
 
@@ -148,8 +151,21 @@ private:
    * 
    * @param sentence sentence consisting of words
    * @return double probability of sentence
+   * @author Porter Glines 1/26/19
    */
   double calculateProbability(vector<string> sentence);
+
+
+  /**
+   * @brief Calculate the frequencies of words
+   * 
+   * The frequencies can be used as the prior probabilities
+   * 
+   * @param sentences training sentences
+   * @return unordered_map<string, int> Frequences map (word, frequency)
+   * @author Porter Glines 1/26/19
+   */
+  unordered_map<string, int> getWordFrequencies(vector< vector<string> > sentences);
 
   /**
    * @brief Normalize the transitionMatrices according to the method
