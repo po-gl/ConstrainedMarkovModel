@@ -1,3 +1,6 @@
+#ifndef CONSTRAINED_MARKOV_H
+#define CONSTRAINED_MARKOV_H
+
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -188,3 +191,5 @@ private:
    */
   void increment(unordered_map< string, unordered_map<string, double> > &transitionProbs, string word, string nextWord);
 };
+
+#endif
