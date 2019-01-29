@@ -21,13 +21,17 @@ MnemonicMarkovModel::MnemonicMarkovModel() {
 void MnemonicMarkovModel::applyConstraints(string constraint) {
   // TODO: Specific NHMM class for specific problem; implementing just this method
 
+  // Constraints:
+  // - First letter matches constraint string
+  // - Words must be longer than 4 characters
+
   for (int i = 0; i < constraint.size(); i++) {
 
     // auto matrix = transitionMatrices[i];
     for (auto iter = transitionMatrices[i].begin(); iter != transitionMatrices[i].end();) {
       // Remove nodes that don't satisfy the constraint 
       // (letter in constraint string == first letter of word)
-      if (constraint[i] != iter->first[0]) {
+      if (constraint[i] != iter->first[0] || iter->first.size() < 4) {
         iter = transitionMatrices[i].erase(iter);
       } else {
         iter++;
