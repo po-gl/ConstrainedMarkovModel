@@ -250,6 +250,17 @@ unordered_map<string, int> ConstrainedMarkovModel::getWordFrequencies(vector< ve
 }
 
 
+vector<int> ConstrainedMarkovModel::getTransitionMatricesSizes() {
+  vector<int> sizes;
+
+  sizes.reserve(transitionMatrices.size());
+  for (int i = 0; i < transitionMatrices.size(); i++) {
+    sizes.push_back((int)transitionMatrices[i].size());
+  }
+  return sizes;
+}
+
+
 void ConstrainedMarkovModel::printTransitionProbs() {
   auto probs = transitionProbs;
   for (const auto &firstWord : probs) {

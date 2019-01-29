@@ -35,7 +35,6 @@ public:
    */
   void train(string filePath, string constraint);
 
-
   /**
    * @brief Generates a sentence
    * 
@@ -43,7 +42,6 @@ public:
    * @author Porter Glines 1/13/19
    */
   vector<string> generateSentence();
-
 
   /**
    * @brief Get the probability of a specific sentence being generated
@@ -78,6 +76,15 @@ public:
    */
   void printTransitionProbs();
 
+  /**
+   * @brief Get the sizes of the transition matrices for debugging
+   * 
+   * @return vector<int> sizes of matrices
+   * @author Porter Glines 1/28/19
+   */
+  vector<int> getTransitionMatricesSizes();
+
+
 protected:
   /// Marker representing the start of a sentence
   const string START = "<<START>>";
@@ -93,6 +100,7 @@ protected:
 
   /// Transition probability matrices between words
   vector< unordered_map< string, unordered_map<string, double> > > transitionMatrices;
+
 
 private:
   /// Stores training sentences used to train the model
