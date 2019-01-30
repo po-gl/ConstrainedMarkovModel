@@ -24,23 +24,34 @@ void MnemonicMarkovModel::applyConstraints(string constraint) {
   // Constraints:
   // - First letter matches constraint string
   // - Words must be longer than 4 characters
+  // - Last word must proceed an <<END>>
+
+  bool proceedsEnd = false;
 
   for (int i = 0; i < constraint.size(); i++) {
 
     // auto matrix = transitionMatrices[i];
-    for (auto iter = transitionMatrices[i].begin(); iter != transitionMatrices[i].end();) {
+    for (auto node = transitionMatrices[i].begin(); node != transitionMatrices[i].end();) {
+      auto test = node->second;
+
+      if (i == constraint.size() - 1) {  // constraint for end node
+        // Set to true if <<END>> is found in the node's proceeding map
+        proceedsEnd = (node->second.find(END) != node->second.end());
+      }
+
       // Remove nodes that don't satisfy the constraint 
       // (letter in constraint string == first letter of word)
-      if (constraint[i] != iter->first[0] || iter->first.size() < 4) {
-        iter = transitionMatrices[i].erase(iter);
+      if (constraint[i] != node->first[0] || node->first.size() < 3 || (!proceedsEnd && i == constraint.size())) {
+        node = transitionMatrices[i].erase(node);
       } else {
-        iter++;
+        node++;
       }
     }
   }
 }
 
 
+// TODO: Move this to Utils and pass sentences in Model constructor
 vector< vector<string> > MnemonicMarkovModel::readInTrainingSentences(string filePath) {
   vector< vector<string> > data;
 
