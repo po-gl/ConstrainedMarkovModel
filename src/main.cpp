@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   time_t sentenceGenerationTime = endTime - startTime;
 
   // Print standard output
-  for (string word : sentence) {
+  for (const string &word : sentence) {
       printf("%s ", word.c_str());
   }
   printf("\n");
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     printf("%35s: %f\n", "Sentence probability", model.getSentenceProbability(sentence));
 
     printf("%35s: ", "Generated Sentence");
-    for (string word : sentence) {
+    for (const string &word : sentence) {
       printf("%s ", word.c_str());
     }
     printf("\n");
