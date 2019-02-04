@@ -18,11 +18,13 @@ int main(int argc, char *argv[]) {
   bool debug = false;
   string constraint;
   string trainingFilePath;
+  int sentenceCount = 1;
 
   time_t startTime;
   time_t endTime;
 
   // Parse Arguments
+  // TODO: create options class
   for (int i = 1; i < argc; i++) {
     // Debug flag
     if (strncmp(argv[i], "--debug", 7) == 0 || strncmp(argv[i], "-d", 2) == 0) {
@@ -37,6 +39,12 @@ int main(int argc, char *argv[]) {
     } else if (strncmp(argv[i], "-c", 2) == 0) {
       if (i+1 < argc) {
         constraint = argv[++i];
+      }
+
+    // Generated sentence count
+    } else if (strncmp(argv[i], "-n", 2) == 0) {
+      if (i+1 < argc) {
+        sentenceCount = atoi(argv[++i]);
       }
 
     // Training file path
@@ -65,22 +73,21 @@ int main(int argc, char *argv[]) {
 
 
   startTime = clock();
-  vector<string> sentence = model.generateSentence();
+  vector< vector<string> > generatedSentences;
+  generatedSentences.reserve(sentenceCount);
+  for (int i = 0; i < sentenceCount; i++) {
+    generatedSentences.push_back(model.generateSentence());
+  }
   endTime = clock();
   time_t sentenceGenerationTime = endTime - startTime;
 
-  // Print standard output
-  for (const string &word : sentence) {
-      printf("%s ", word.c_str());
-  }
-  printf("\n");
 
   if (debug) {  // Print debug information
     printf("\n");
     printf("%45s\n", "=== DEBUG INFORMATION ===");
 
     printf("%35s: %f\n", "Elapsed Training Time (sec)", (float)trainingTime/CLOCKS_PER_SEC);
-    printf("%35s: %f\n", "Elapsed Sentence Gen Time (sec)", (float)sentenceGenerationTime/CLOCKS_PER_SEC);
+    printf("%35s: %f\n", "Elapsed Sentence(s) Gen Time (sec)", (float)sentenceGenerationTime/CLOCKS_PER_SEC);
 
     printf("%35s: ", "Transition Matrix sizes");
     vector<int> sizes = model.getTransitionMatricesSizes();
@@ -88,16 +95,28 @@ int main(int argc, char *argv[]) {
       printf("%d --> ", size);
     }
     printf("\n");
-    
-    printf("%35s: %f\n", "Sentence probability", model.getSentenceProbability(sentence));
+    printf("\n");
 
-    printf("%35s: ", "Generated Sentence");
-    for (const string &word : sentence) {
-      printf("%s ", word.c_str());
+    printf("%45s\n", "=== Generated Sentences ===");
+    printf("%35s: %s\n", "(prob)", "(sentence)");
+    for (const auto &sentence : generatedSentences) {
+      printf("%35f: ", model.getSentenceProbability(sentence));
+
+      for (const string &word : sentence) {
+        printf("%s ", word.c_str());
+      }
+      printf("\n");
     }
-    printf("\n");
+  }
+  else {
 
-    printf("\n");
+    // Print standard output
+    for (const auto &sentence : generatedSentences) {
+      for (const string &word : sentence) {
+        printf("%s ", word.c_str());
+      }
+      printf("\n");
+    }
   }
 
  return 0;
