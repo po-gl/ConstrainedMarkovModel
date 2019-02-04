@@ -41,7 +41,8 @@ void MnemonicMarkovModel::applyConstraints(string constraint) {
 
       // Remove nodes that don't satisfy the constraint 
       // (letter in constraint string == first letter of word)
-      if (constraint[i] != node->first[0] || node->first.size() < 3 || (!proceedsEnd && i == constraint.size())) {
+//      if (constraint[i] != node->first[0] || node->first.size() < 3 || (!proceedsEnd && i == constraint.size())) {
+      if (constraint[i] != node->first[0]) {
         node = transitionMatrices[i].erase(node);
       } else {
         node++;
@@ -58,20 +59,53 @@ vector< vector<string> > MnemonicMarkovModel::readInTrainingSentences(string fil
   ifstream file;
   stringstream buffer;
   file.open(filePath, ios::in);
-  
+
   if (file.is_open()) {
     buffer << file.rdbuf();
   } else {
     printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
   }
+
   // Split the line along delimiters for sentences
   vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
 
   // Split up words in sentences
+  data.reserve(sentences.size());
   for (const string &sentence : sentences) {
-    data.push_back(Utils::split(sentence, "\\s,;:\"\\(\\)"));
+    data.push_back(Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)1234567890"));
   }
 
-  file.close();
+  // Handle (most) contractions
+  for (vector<string> &sentence : data) {
+    for (int i = 0; i < sentence.size(); i++) {
+      if (i == 0) continue;
+
+      if (sentence[i].find('\'') != string::npos) {
+        sentence[i-1].append(sentence[i]);
+        sentence.erase(sentence.begin()+i);
+      }
+    }
+  }
+
+
+//  // Simple implementation (Gutenburg samples)
+//  ifstream file;
+//  stringstream buffer;
+//  file.open(filePath, ios::in);
+//
+//  if (file.is_open()) {
+//    buffer << file.rdbuf();
+//  } else {
+//    printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
+//  }
+//  // Split the line along delimiters for sentences
+//  vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
+//
+//  // Split up words in sentences
+//  for (const string &sentence : sentences) {
+//    data.push_back(Utils::split(sentence, "\\s,;:\"\\(\\)"));
+//  }
+
+//  file.close();
   return data;
 }
