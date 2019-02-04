@@ -68,11 +68,11 @@ void ConstrainedMarkovModel::increment(unordered_map< string, unordered_map<stri
 }
 
 
+// TODO FIX: The last transition table doesn't have any nodes removed; they are ignored when generating, but shouldn't be there?
 void ConstrainedMarkovModel::removeDeadNodes() {
   // Enforce arc-consistency
   for (int i = (int)transitionMatrices.size() - 1; i > 0; i--) {
 
-    // TODO: make more efficient and/or clear with graph data structure
     // This is a tree structured CSP, so no backtracking is needed
     // Iterate through the previous word's matrix, looking at the tail
 
@@ -103,35 +103,50 @@ void ConstrainedMarkovModel::removeDeadNodes() {
 
 void ConstrainedMarkovModel::normalize() {
   // We first normalize individually the last matrix (Pachet) **CITE
+  double prevSum;
 
-  double prevSum = 1.0;
+  vector< unordered_map<string, double> > aSums;
+  aSums.reserve(transitionMatrices.size());
+  for (int i = (int)transitionMatrices.size() - 1; i >= 0; i--) {
+    aSums.emplace_back(unordered_map<string, double>());
+  }
 
   for (int i = (int)transitionMatrices.size() - 1; i >= 0; i--) {
 
     auto *transitionMap = &transitionMatrices[i];
 
-    for (auto &map : *transitionMap) {
 
-      // normalize in a normal fashion
+    for (auto &map : *transitionMap) {
       auto *innerMap = &map.second;
-      double sumZ = 0.0;
-      for (const auto &pair : *innerMap) {
-        sumZ += pair.second;
+      double sumA = 0.0;
+
+      // Normalize for the last transition matrix
+      if (i == (int)transitionMatrices.size() - 1) {
+        // normalize in a normal fashion
+        for (const auto &pair : *innerMap) {
+          sumA += pair.second;  // update sumA
+        }
+
+      // Normalize for 0 to L-1 transition matrices
+      } else {
+        for (const auto &pair : *innerMap) {
+          prevSum = aSums[i+1][pair.first];
+          sumA += prevSum * pair.second;  // update sumA
+        }
       }
 
-      double sumA = sumZ * prevSum;
+      aSums[i][map.first] = sumA;  // save sums for later use
 
       for (const auto &pair : *innerMap) {
         if (i == transitionMatrices.size() - 1) {
           // normalize individually for the last matrix
-          innerMap->at(pair.first) /= sumZ;
-        } else { 
+          innerMap->at(pair.first) /= sumA;
+        } else {
+          prevSum = aSums[i+1][pair.first];
           // normalize in a propagating manor for the middle and first matrices
           innerMap->at(pair.first) = innerMap->at(pair.first) * prevSum / sumA;
         }
       }
-
-      prevSum *= sumZ;
     }
   }
 }
@@ -262,12 +277,19 @@ vector<int> ConstrainedMarkovModel::getTransitionMatricesSizes() {
 
 
 void ConstrainedMarkovModel::printTransitionProbs() {
-  auto probs = transitionProbs;
-  for (const auto &firstWord : probs) {
-    printf("%20s >>> ", firstWord.first.c_str());
-    for (const auto &nextWord : firstWord.second) {
-      printf("%s:(%0.3f) ", nextWord.first.c_str(), nextWord.second);
+  for (const auto &matrix : transitionMatrices) {
+    printf("|------------------------------------------------------------------|\n");
+    printf("|==================================================================|\n");
+    printf("|------------------------------------------------------------------|\n");
+    for (const auto &firstWord : matrix) {
+      printf("%20s >>> ", firstWord.first.c_str());
+      double sum = 0.0;
+      for (const auto &nextWord : firstWord.second) {
+        printf("%s:(%0.3f) ", nextWord.first.c_str(), nextWord.second);
+        sum += nextWord.second;
+      }
+      printf(" sum: >%f<", sum);
+      printf("\n");
     }
-    printf("\n");
   }
 }
