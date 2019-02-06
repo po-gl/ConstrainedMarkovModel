@@ -12,6 +12,9 @@ CMakeLists.txt
 
 # output
 a.out
+output/
+
+data/
 
 # doxygen
 html/
