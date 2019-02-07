@@ -1,5 +1,7 @@
 #include <iostream>
 #include <time.h>
+#include <algorithm>
+#include "utils.h"
 #include "mnemonicmarkov.h"
 
 using namespace std;
@@ -16,8 +18,9 @@ int main(int argc, char *argv[]) {
 
   // Set default values
   bool debug = false;
-  string constraint;
   string trainingFilePath;
+  string constraint;
+  int markovOrder = 1;
   int sentenceCount = 1;
 
   time_t startTime;
@@ -39,6 +42,13 @@ int main(int argc, char *argv[]) {
     } else if (strncmp(argv[i], "-c", 2) == 0) {
       if (i+1 < argc) {
         constraint = argv[++i];
+        // Strip double quotes
+        constraint.erase(remove( constraint.begin(), constraint.end(), '\"'), constraint.end());
+      }
+
+    } else if (strncmp(argv[i], "-m", 2) == 0) {
+      if (i+1 < argc) {
+        markovOrder = atoi(argv[++i]);
       }
 
     // Generated sentence count
@@ -67,7 +77,7 @@ int main(int argc, char *argv[]) {
   MnemonicMarkovModel model;
 
   startTime = clock();
-  model.train(trainingFilePath, constraint);
+  model.train(trainingFilePath, Utils::splitAndLower(constraint, "\\s,"), markovOrder);
   endTime = clock();
   time_t trainingTime = endTime - startTime;
 
@@ -85,6 +95,8 @@ int main(int argc, char *argv[]) {
   if (debug) {  // Print debug information
     printf("\n");
     printf("%45s\n", "=== DEBUG INFORMATION ===");
+    printf("%35s: %s\n", "Constraint", constraint.c_str());
+    printf("%35s: %d\n", "Markov Order", markovOrder);
 
     printf("%35s: %f\n", "Elapsed Training Time (sec)", (float)trainingTime/CLOCKS_PER_SEC);
     printf("%35s: %f\n", "Elapsed Sentence(s) Gen Time (sec)", (float)sentenceGenerationTime/CLOCKS_PER_SEC);
@@ -97,7 +109,7 @@ int main(int argc, char *argv[]) {
     printf("\n");
     printf("\n");
 
-    printf("%45s\n", "=== Generated Sentences ===");
+    printf("%35s (%d) ===\n", "=== Generated Sentences", sentenceCount);
     printf("%35s: %s\n", "(prob)", "(sentence)");
     for (const auto &sentence : generatedSentences) {
       printf("%35f: ", model.getSentenceProbability(sentence));
@@ -107,16 +119,16 @@ int main(int argc, char *argv[]) {
       }
       printf("\n");
     }
+    printf("%35s\n", "==========================================================");
   }
-  else {
 
-    // Print standard output
-    for (const auto &sentence : generatedSentences) {
-      for (const string &word : sentence) {
-        printf("%s ", word.c_str());
-      }
-      printf("\n");
+
+  // Print standard output
+  for (const auto &sentence : generatedSentences) {
+    for (const string &word : sentence) {
+      printf("%s ", word.c_str());
     }
+    printf("\n");
   }
 
  return 0;

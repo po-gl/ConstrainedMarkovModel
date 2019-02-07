@@ -21,10 +21,10 @@ public:
    * generate words starting with "T", "W", and "D" such as
    * "The weather door"
    * 
-   * @param constraint required first letters
+   * @param array of words from a problem the mnemonic is trying to help with
    * @author Porter Glines 1/21/19
    */
-  void applyConstraints(string constraint);
+  void applyConstraints(vector<string> constraint, int markovOrder);
 
 
   /**
@@ -33,7 +33,7 @@ public:
    * @param filePath path to training text
    * @return vector< vector<string> > array of sentences made up of arrays of words
    */
-  vector< vector<string> > readInTrainingSentences(string filePath);
+  vector< vector<string> > readInTrainingSentences(string filePath, int markovOrder);
 };
 
 #endif

@@ -31,9 +31,10 @@ public:
    * Finally normalizes the probabilities
    * 
    * @param filePath path to training text
+   * @param constraint for NHMM
    * @author Porter Glines 1/13/19
    */
-  void train(string filePath, string constraint);
+  void train(string filePath, vector<string> constraint, int markovOrder = 1);
 
   /**
    * @brief Generates a sentence
@@ -69,7 +70,7 @@ public:
    * @param filePath path to training text
    * @return vector< vector<string> > array of sentences made up of arrays of words
    */
-  virtual vector< vector<string> > readInTrainingSentences(string filePath) = 0;
+  virtual vector< vector<string> > readInTrainingSentences(string filePath, int markovOrder = 1) = 0;
 
   /**
    * @brief Print the transition probabilities for debugging
@@ -91,7 +92,11 @@ protected:
   /// Marker representing the end of a sentence
   const string END = "<<END>>";
 
+  /// Specifies the markov order (lookahead distance) for the model
+  int markovOrder;
+
   int sentenceLength;
+
 
   /// Random generator
   mt19937 randGenerator;
@@ -117,7 +122,7 @@ private:
    * 
    * This is a pure virtual function
    */
-  virtual void applyConstraints(string constraint) = 0;
+  virtual void applyConstraints(vector<string> constraint, int markovOrder = 1) = 0;  // TODO: make parameter generic
 
   /**
    * @brief Remove nodes that violate arc consistency

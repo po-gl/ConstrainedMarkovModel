@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <random>
+#include <time.h>
 
 #include "constrainedmarkov.h"
 #include "utils.h"
@@ -17,9 +18,22 @@ using namespace std;
 
 // TODO: Templates for non-string use cases
 
-void ConstrainedMarkovModel::train(string filePath, string constraint) {
+void ConstrainedMarkovModel::train(string filePath, vector<string> constraint, int markovOrder) {
+
+  bool debug = true; // TODO: Move timing prints to debug class
+  time_t startTime;
+
+  this->markovOrder = markovOrder;  // default parameter = 1
   this->sentenceLength = (int)constraint.size();
-  this->trainingSequences = readInTrainingSentences(filePath); 
+
+  if (debug)
+      startTime = clock();
+
+  this->trainingSequences = readInTrainingSentences(filePath, markovOrder);
+
+  if (debug)
+      printf("%35s: %f\n", "Elapsed Time Reading Data", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+
 
   // iterate over sentences
   for (vector<string> sentence : this->trainingSequences) {
@@ -36,21 +50,49 @@ void ConstrainedMarkovModel::train(string filePath, string constraint) {
   }
 
   // copy matrices for each word (note that START is added later, see addStartTransition())
-  for (int i = 0; i < sentenceLength; i++) {
+  for (int i = 0; i < ceil(((double)sentenceLength) / markovOrder); i++) {
     transitionMatrices.push_back(transitionProbs);
   }
 
+
+  if (debug)
+      startTime = clock();
+
   // Apply constraint by removing nodes that violate the constraint
-  applyConstraints(constraint);
+  applyConstraints(constraint, markovOrder);
+
+
+  if (debug)
+      printf("%35s: %f\n", "Elapsed Time Applying Constraints", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+
+  if (debug)
+      startTime = clock();
 
   // Enforce arc-consistency
   removeDeadNodes();
 
+  if (debug)
+      printf("%35s: %f\n", "Elapsed Time Removing Nodes", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+
+
+  if (debug)
+    startTime = clock();
+
   // Add in start transition matrices
   addStartTransition();
 
+  if (debug)
+    printf("%35s: %f\n", "Elapsed Time Adding Start Matrix", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+
+
+  if (debug)
+    startTime = clock();
+
   // Normalize as described in Pachet's paper
   normalize();
+
+  if (debug)
+    printf("%35s: %f\n", "Elapsed Time Normalizing", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 }
 
 
@@ -185,7 +227,7 @@ vector<string> ConstrainedMarkovModel::generateSentence() {
   sentence.push_back(nextWord);
 
   string prevWord = nextWord;
-  for (int i = 1; i < sentenceLength; i++) {
+  for (int i = 1; i < transitionMatrices.size() - 1; i++) {
     nextWord = getNextWord(prevWord, i);
     sentence.push_back(nextWord);
     prevWord = nextWord;
@@ -201,9 +243,7 @@ double ConstrainedMarkovModel::getSentenceProbability(vector<string> sentence) {
   string currWord;
   string nextWord;
 
-  // transitionMatrices length should be sentence length + 1
-  // with transitionMatrices[0] being the matrix for START
-  for (int i = 0; i < sentenceLength; i++) {
+  for (int i = 0; i < transitionMatrices.size(); i++) {
     auto currentMatrix = transitionMatrices[i];
     if (i == 0) {
       currWord = START;
