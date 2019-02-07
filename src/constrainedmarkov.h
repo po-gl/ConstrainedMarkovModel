@@ -30,11 +30,12 @@ public:
    * 
    * Finally normalizes the probabilities
    * 
-   * @param filePath path to training text
+   * @param trainingSequences vector of sentences to train on
    * @param constraint for NHMM
+   * @param markovOrder specifies the markov order of the model (the lookahead distance)
    * @author Porter Glines 1/13/19
    */
-  void train(string filePath, vector<string> constraint, int markovOrder = 1);
+  void train(vector< vector<string> > trainingSequences, vector<string> constraint, int markovOrder = 1);
 
   /**
    * @brief Generates a sentence
@@ -61,16 +62,6 @@ public:
    * @return int 
    */
   int getSentenceLength() { return sentenceLength; }
-
-  /**
-   * @brief Read in training text into an array of sentences made up of arrays of words
-   * 
-   * This is a pure virtual function
-   * 
-   * @param filePath path to training text
-   * @return vector< vector<string> > array of sentences made up of arrays of words
-   */
-  virtual vector< vector<string> > readInTrainingSentences(string filePath, int markovOrder = 1) = 0;
 
   /**
    * @brief Print the transition probabilities for debugging

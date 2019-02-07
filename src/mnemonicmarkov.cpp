@@ -81,9 +81,9 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
 
       // Remove nodes that don't satisfy the constraint
       // (letter in constraint string == first letter of word)
-//      if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
+      if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
 //      if (!firstCharMatches || !wordLengthMet) {
-      if (!firstCharMatches) {
+//      if (!firstCharMatches) {
         node = transitionMatrices[m].erase(node);
         debugCount++;
       } else {
@@ -94,76 +94,4 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
   }
 
   printf("DEBUG:: Removed nodes: %d / %d\n", debugCount, debugCountTot); // 534472/549018
-}
-
-
-// TODO: Move this to Utils and pass sentences in Model constructor
-vector< vector<string> > MnemonicMarkovModel::readInTrainingSentences(string filePath, int markovOrder) {
-  vector< vector<string> > data;
-
-  ifstream file;
-  stringstream buffer;
-  file.open(filePath, ios::in);
-
-  if (file.is_open()) {
-    buffer << file.rdbuf();
-  } else {
-    printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
-  }
-
-  // Split the line along delimiters for sentences
-  vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
-
-  // Split up words in sentences
-  data.reserve(sentences.size());
-  for (const string &sentence : sentences) {
-    vector<string> words = Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)1234567890");
-
-    // Handle (most) contractions
-    for (int i = 0; i < words.size(); i++) {
-      if (i == 0) continue;
-
-      if (words[i].find('\'') != string::npos) {
-        words[i-1].append(words[i]);
-        words.erase(words.begin()+i);
-      }
-    }
-
-    // Combine two words to increase the markov order
-    vector<string> combinedWords;
-    combinedWords.reserve(words.size()/markovOrder);
-    for (int i = 0; i < words.size(); i+=markovOrder) {
-      string word;
-      for (int j = i; j < words.size() && j < i+markovOrder; j++) {
-        word += words[j] + " ";
-      }
-      word.pop_back(); // remove extra space
-
-      combinedWords.push_back(word);
-    }
-
-    data.push_back(combinedWords);
-  }
-
-
-//  // Simple implementation (Gutenburg samples)
-//  ifstream file;
-//  stringstream buffer;
-//  file.open(filePath, ios::in);
-//
-//  if (file.is_open()) {
-//    buffer << file.rdbuf();
-//  } else {
-//    printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
-//  }
-//  // Split the line along delimiters for sentences
-//  vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
-//
-//  // Split up words in sentences
-//  for (const string &sentence : sentences) {
-//    data.push_back(Utils::split(sentence, "\\s,;:\"\\(\\)"));
-//  }
-
-//  file.close();
-  return data;
 }

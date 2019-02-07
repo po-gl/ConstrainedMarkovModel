@@ -34,6 +34,14 @@ namespace Utils {
    * Porter Glines 1/22/19
    **/
   vector<string> splitAndLower(string st, string delims);
+
+  /**
+   * @brief Read in training text into an array of sentences made up of arrays of words
+   *
+   * @param filePath path to training text
+   * @return vector< vector<string> > array of sentences made up of arrays of words
+   */
+  vector< vector<string> > readInTrainingSentences(string filePath, int markovOrder = 1);
 }
 
 #endif

@@ -25,15 +25,6 @@ public:
    * @author Porter Glines 1/21/19
    */
   void applyConstraints(vector<string> constraint, int markovOrder);
-
-
-  /**
-   * @brief Read in training text into an array of sentences made up of arrays of words
-   * 
-   * @param filePath path to training text
-   * @return vector< vector<string> > array of sentences made up of arrays of words
-   */
-  vector< vector<string> > readInTrainingSentences(string filePath, int markovOrder);
 };
 
 #endif

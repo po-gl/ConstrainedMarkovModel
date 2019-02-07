@@ -1,6 +1,4 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -18,21 +16,18 @@ using namespace std;
 
 // TODO: Templates for non-string use cases
 
-void ConstrainedMarkovModel::train(string filePath, vector<string> constraint, int markovOrder) {
+void ConstrainedMarkovModel::train(vector< vector<string> >  trainingSequences, vector<string> constraint, int markovOrder) {
 
   bool debug = true; // TODO: Move timing prints to debug class
   time_t startTime;
 
   this->markovOrder = markovOrder;  // default parameter = 1
   this->sentenceLength = (int)constraint.size();
+  this->trainingSequences = trainingSequences;
 
-  if (debug)
-      startTime = clock();
-
-  this->trainingSequences = readInTrainingSentences(filePath, markovOrder);
-
-  if (debug)
-      printf("%35s: %f\n", "Elapsed Time Reading Data", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+  // Clear model data structures
+  transitionMatrices.clear();
+  transitionProbs.clear();
 
 
   // iterate over sentences
@@ -244,6 +239,9 @@ double ConstrainedMarkovModel::getSentenceProbability(vector<string> sentence) {
   string nextWord;
 
   for (int i = 0; i < transitionMatrices.size(); i++) {
+    if (i >= sentence.size()) {
+      break;
+    }
     auto currentMatrix = transitionMatrices[i];
     if (i == 0) {
       currWord = START;
@@ -253,7 +251,9 @@ double ConstrainedMarkovModel::getSentenceProbability(vector<string> sentence) {
       nextWord = sentence[i];
     }
 
-    prob *= currentMatrix[currWord][nextWord];
+    double p = currentMatrix[currWord][nextWord];
+    if (p != 0)
+        prob *= p;
   }
   return prob;
 }
