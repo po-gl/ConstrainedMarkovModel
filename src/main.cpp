@@ -2,6 +2,8 @@
 #include <time.h>
 #include <algorithm>
 #include "utils.h"
+#include "debug.h"
+#include "console.h"
 #include "mnemonicmarkov.h"
 
 using namespace std;
@@ -32,6 +34,7 @@ int main(int argc, char *argv[]) {
     // Debug flag
     if (strncmp(argv[i], "--debug", 7) == 0 || strncmp(argv[i], "-d", 2) == 0) {
       debug = true;
+      Debug::setDebugEnabled(true);
 
     // Help
     } else if (strncmp(argv[i], "help", 4) == 0) {

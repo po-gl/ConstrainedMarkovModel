@@ -5,8 +5,9 @@
 #include <random>
 #include <time.h>
 
-#include "constrainedmarkov.h"
 #include "utils.h"
+#include "console.h"
+#include "constrainedmarkov.h"
 
 using namespace std;
 
@@ -43,6 +44,7 @@ void ConstrainedMarkovModel::train(vector< vector<string> >  trainingSequences, 
       increment(transitionProbs, sentence[sentence.size() - 1], END);
     }
   }
+  Console::debugPrint("%35s: %lu\n", "Training Sentence Count", this->trainingSequences.size());
 
   // copy matrices for each word (note that START is added later, see addStartTransition())
   for (int i = 0; i < ceil(((double)sentenceLength) / markovOrder); i++) {
@@ -50,44 +52,25 @@ void ConstrainedMarkovModel::train(vector< vector<string> >  trainingSequences, 
   }
 
 
-  if (debug)
-      startTime = clock();
-
   // Apply constraint by removing nodes that violate the constraint
+  startTime = clock();
   applyConstraints(constraint, markovOrder);
-
-
-  if (debug)
-      printf("%35s: %f\n", "Elapsed Time Applying Constraints", (float)(clock() - startTime)/CLOCKS_PER_SEC);
-
-  if (debug)
-      startTime = clock();
+  Console::debugPrint("%35s: %f\n", "Elapsed Time Applying Constraints", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Enforce arc-consistency
+  startTime = clock();
   removeDeadNodes();
-
-  if (debug)
-      printf("%35s: %f\n", "Elapsed Time Removing Nodes", (float)(clock() - startTime)/CLOCKS_PER_SEC);
-
-
-  if (debug)
-    startTime = clock();
+  Console::debugPrint("%35s: %f\n", "Elapsed Time Removing Nodes", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Add in start transition matrices
+  startTime = clock();
   addStartTransition();
-
-  if (debug)
-    printf("%35s: %f\n", "Elapsed Time Adding Start Matrix", (float)(clock() - startTime)/CLOCKS_PER_SEC);
-
-
-  if (debug)
-    startTime = clock();
+  Console::debugPrint("%35s: %f\n", "Elapsed Time Adding Start Matrix", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Normalize as described in Pachet's paper
+  startTime = clock();
   normalize();
-
-  if (debug)
-    printf("%35s: %f\n", "Elapsed Time Normalizing", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+  Console::debugPrint("%35s: %f\n", "Elapsed Time Normalizing", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 }
 
 
@@ -137,6 +120,7 @@ void ConstrainedMarkovModel::removeDeadNodes() {
     }
   }
 }
+
 
 void ConstrainedMarkovModel::normalize() {
   // We first normalize individually the last matrix (Pachet) **CITE
