@@ -64,6 +64,7 @@ vector< vector<string> > Utils::readInTrainingSentences(string filePath, int mar
   } else {
     printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
   }
+  file.close();
 
   // Split the line along delimiters for sentences
   vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
