@@ -44,7 +44,6 @@ void ConstrainedMarkovModel::train(vector< vector<string> >  trainingSequences, 
       increment(transitionProbs, sentence[sentence.size() - 1], END);
     }
   }
-  Console::debugPrint("%35s: %lu\n", "Training Sentence Count", this->trainingSequences.size());
 
   // copy matrices for each word (note that START is added later, see addStartTransition())
   for (int i = 0; i < ceil(((double)sentenceLength) / markovOrder); i++) {

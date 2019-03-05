@@ -8,6 +8,41 @@
 
 using namespace std;
 
+
+vector< vector<string> > Utils::splitAll(string str, string sentenceDelims, string wordDelims) {
+  vector< vector<string> > ret;
+
+  regex sentenceExp("[^" + sentenceDelims + "]+");
+  auto begin = sregex_iterator(str.begin(), str.end(), sentenceExp);
+  auto end = sregex_iterator();
+
+  regex wordExp("[^" + wordDelims + "]+");
+  regex_iterator<string::const_iterator> sentenceBegin;
+  regex_iterator<string::const_iterator> sentenceEnd = sregex_iterator();
+
+  string sentence;
+  vector<string> workingSentence;
+  while (begin != end) {
+//    auto debugTime = clock();
+    sentence = begin->str();
+
+    sentenceBegin = sregex_iterator(sentence.begin(), sentence.end(), wordExp);
+
+    workingSentence = vector<string>();
+//    workingSentence.reserve(16);
+
+    while (sentenceBegin != sentenceEnd) {
+      workingSentence.push_back(sentenceBegin->str());
+      sentenceBegin++;
+    }
+//    printf("%35s: %f\n", "Elapsed Time on sentence", (float) (clock() - debugTime) / CLOCKS_PER_SEC);
+    ret.push_back(workingSentence);
+    begin++;
+  }
+  return ret;
+}
+
+
 /**
  * Splits a string along delimiters
  * uses Regular expressions for splitting
@@ -52,9 +87,10 @@ vector<string> Utils::splitAndLower(string str, string delims) {
 }
 
 
-vector< vector<string> > Utils::readInTrainingSentences(string filePath, int markovOrder) {
-  vector<vector<string> > data;
+// Idea: read in sentences into vectors as fast as possible first, then thread remove non-words
 
+
+string Utils::readInTrainingSentences(string filePath) {
   ifstream file;
   stringstream buffer;
   file.open(filePath, ios::in);
@@ -66,60 +102,51 @@ vector< vector<string> > Utils::readInTrainingSentences(string filePath, int mar
   }
   file.close();
 
+  return buffer.str();
+}
+
+
+vector<vector<string> > Utils::processTrainingSentences(string text, int markovOrder) {
+  vector<vector<string> > data;
+
   // Split the line along delimiters for sentences
-  vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
+  vector<string> sentences = Utils::splitAndLower(text, ".?!");
 
   // Split up words in sentences
   data.reserve(sentences.size());
   for (const string &sentence : sentences) {
-    vector<string> words = Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)1234567890");
+    // TODO: attach part of speech to word
+
+//    vector<string> words = Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)1234567890");
+    vector<string> words = Utils::split(sentence, "\\s0-9");
 
     // Handle (most) contractions
-    for (int i = 0; i < words.size(); i++) {
-      if (i == 0) continue;
+//    for (int i = 0; i < words.size(); i++) {
+//      if (i == 0) continue;
+//
+//      if (words[i].find('\'') != string::npos) {
+//        words[i - 1].append(words[i]);
+//        words.erase(words.begin() + i);
+//      }
+//    }
 
-      if (words[i].find('\'') != string::npos) {
-        words[i - 1].append(words[i]);
-        words.erase(words.begin() + i);
+    // Combine words to increase the markov order
+    if (markovOrder > 1) {
+      vector<string> combinedWords;
+      combinedWords.reserve(words.size() / markovOrder);
+      for (int i = 0; i < words.size(); i += markovOrder) {
+        string word;
+        for (int j = i; j < words.size() && j < i + markovOrder; j++) {
+          word += words[j] + " ";
+        }
+        word.pop_back(); // remove extra space
+
+        combinedWords.push_back(word);
       }
+      data.push_back(combinedWords);
+    } else {
+      data.push_back(words);
     }
-
-    // Combine two words to increase the markov order
-    vector<string> combinedWords;
-    combinedWords.reserve(words.size() / markovOrder);
-    for (int i = 0; i < words.size(); i += markovOrder) {
-      string word;
-      for (int j = i; j < words.size() && j < i + markovOrder; j++) {
-        word += words[j] + " ";
-      }
-      word.pop_back(); // remove extra space
-
-      combinedWords.push_back(word);
-    }
-
-    data.push_back(combinedWords);
   }
-
   return data;
 }
-
-
-//  // Simple implementation (Gutenburg samples)
-//  ifstream file;
-//  stringstream buffer;
-//  file.open(filePath, ios::in);
-//
-//  if (file.is_open()) {
-//    buffer << file.rdbuf();
-//  } else {
-//    printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
-//  }
-//  // Split the line along delimiters for sentences
-//  vector<string> sentences = Utils::splitAndLower(buffer.str(), ".?!");
-//
-//  // Split up words in sentences
-//  for (const string &sentence : sentences) {
-//    data.push_back(Utils::split(sentence, "\\s,;:\"\\(\\)"));
-//  }
-
-//  file.close();

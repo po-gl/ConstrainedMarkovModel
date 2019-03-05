@@ -8,8 +8,8 @@
 
 using namespace std;
 
-// TODO: Use proper data instead of Gutenburg books
-
+// TODO: Implement an interactive mode
+// TODO: Implement a cache of processed data and argment to use it "-p or --use-cache"
 
 void printHelp() {
   printf("usage: markov [--debug | -d] -c constraint training_text\n");
@@ -78,22 +78,20 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  if (debug) {
-    printf("%35s:\n", "Constraints");
-    for (const auto &constraint : constraints) {
-      printf("%35s: %s\n", "Constraint", constraint.c_str());
-    }
+  for (const auto &constraint : constraints) {
+    Console::debugPrint("%35s: %s\n", "Constraint", constraint.c_str());
   }
 
-  if (debug)
-    startTime = clock();
-  vector< vector<string> > trainingSequences = Utils::readInTrainingSentences(trainingFilePath, markovOrder);
-  if (debug) {
-    printf("%35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-    printf("|------------------------------------------------------------------|\n");
-    printf("|==================================================================|\n");
-    printf("|------------------------------------------------------------------|\n");
-  }
+  // Read in training sentences
+  startTime = clock();
+  string trainingText = Utils::readInTrainingSentences(trainingFilePath);
+  Console::debugPrint("%35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+
+  // Process training sentences
+  startTime = clock();
+  vector< vector<string> > trainingSequences = Utils::processTrainingSentences(trainingText, markovOrder);
+  Console::debugPrint("%35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+  Console::debugPrint("%35s: %d\n", "Training Sentence Count", trainingSequences.size());
 
 
   MnemonicMarkovModel model;
