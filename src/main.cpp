@@ -12,7 +12,7 @@ using namespace std;
 // TODO: Implement a cache of processed data and argment to use it "-p or --use-cache"
 
 void printHelp() {
-  printf("usage: markov [--debug | -d] -c constraint training_text\n");
+  printf("usage: markov [--debug | -d] -c constraint [-m] [-n] [-p] training_text\n");
 }
 
 
@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
   vector<string> constraints;
   int markovOrder = 1;
   int sentenceCount = 1;
+  bool useCache = false;
 
   time_t startTime;
   time_t endTime;
@@ -51,6 +52,7 @@ int main(int argc, char *argv[]) {
         constraints.push_back(constraint);
       }
 
+    // Markov Order
     } else if (strncmp(argv[i], "-m", 2) == 0) {
       if (i+1 < argc) {
         markovOrder = atoi(argv[++i]);
@@ -61,6 +63,10 @@ int main(int argc, char *argv[]) {
       if (i+1 < argc) {
         sentenceCount = atoi(argv[++i]);
       }
+
+    // Use cached files
+    } else if (strncmp(argv[i], "-p", 2) == 0) {
+      useCache = true;
 
     // Training file path
     } else {
@@ -82,16 +88,34 @@ int main(int argc, char *argv[]) {
     Console::debugPrint("%35s: %s\n", "Constraint", constraint.c_str());
   }
 
-  // Read in training sentences
-  startTime = clock();
-  string trainingText = Utils::readInTrainingSentences(trainingFilePath);
-  Console::debugPrint("%35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
 
-  // Process training sentences
-  startTime = clock();
-  vector< vector<string> > trainingSequences = Utils::processTrainingSentences(trainingText, markovOrder);
-  Console::debugPrint("%35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-  Console::debugPrint("%35s: %d\n", "Training Sentence Count", trainingSequences.size());
+  // Read/Pre-process training sequences
+  vector< vector<string> > trainingSequences;
+  if (useCache) {
+    // Read in training sentences from cache
+    startTime = clock();
+    trainingSequences = Utils::readFromCache(Utils::getBasename(trainingFilePath));
+    Console::debugPrint("%35s: %f\n", "Elapsed Time Reading Data From Cache", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+  }
+
+  if (trainingSequences.empty()){
+    if (useCache)
+      Console::debugPrint("No cache found for file.\n");
+
+    // Read in training sentences
+    startTime = clock();
+    string trainingText = Utils::readInTrainingSentences(trainingFilePath);
+    Console::debugPrint("%35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+
+    // Process training sentences
+    startTime = clock();
+    trainingSequences = Utils::processTrainingSentences(trainingText, markovOrder);
+    Console::debugPrint("%35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+    Console::debugPrint("%35s: %d\n", "Training Sentence Count", trainingSequences.size());
+
+    if (useCache)
+      Utils::writeToCache(Utils::getBasename(trainingFilePath), trainingSequences);
+  }
 
 
   MnemonicMarkovModel model;

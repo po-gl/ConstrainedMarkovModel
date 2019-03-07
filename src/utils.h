@@ -7,6 +7,9 @@ using namespace std;
 #define Utils_H
 
 namespace Utils {
+  const string cacheSuffix = ".CACHE";
+  const string cacheDirectory = "./cache/";
+
   /**
    * @brief Splits a string along delimiters
    * heavily utilizes regular expressions
@@ -43,7 +46,7 @@ namespace Utils {
    * @param sentenceDelims delimiters for sentences
    * @param wordDelims delimiters for words
    * @return 2D vector of words in sentences
-   * @author Proter Glines 3/5/19
+   * @author Porter Glines 3/5/19
    */
   vector< vector<string> > splitAll(string str, string sentenceDelims, string wordDelims);
 
@@ -52,7 +55,7 @@ namespace Utils {
    *
    * @param filePath path to training text
    * @return text string
-   * @author Proter Glines 3/5/19
+   * @author Porter Glines 3/5/19
    */
   string readInTrainingSentences(string filePath);
 
@@ -65,9 +68,34 @@ namespace Utils {
    * @param text entire input text
    * @param markovOrder lookahead for markov model
    * @return 2D vector of words in sentences
-   * @author Proter Glines 3/5/19
+   * @author Porter Glines 3/5/19
    */
-  vector<vector<string> > processTrainingSentences(string text, int markovOrder);
+  vector< vector<string> > processTrainingSentences(string text, int markovOrder);
+
+  /**
+   * Read from pre-processed training sequence cache
+   * @param fileName name of original data source file
+   * @return pre-processed training sequences from cache
+   * @author Porter Glines 3/7/19
+   */
+  vector< vector<string> > readFromCache(string fileName);
+
+  /**
+   * Write to pre-processed training sequence cache
+   * @param fileName name of original data source file
+   * @param trainingSentences pre-processed training sequences
+   * @author Porter Glines 3/7/19
+   */
+  void writeToCache(string fileName, vector<vector<string> > trainingSentences);
+
+  /**
+   * @brief returns the basename for a Unix filepath
+   * "/foo/bar/file" would return "file"
+   * @param filePath string path
+   * @return basename as string
+   * @author Porter Glines 3/7/19
+   */
+  string getBasename(string filePath);
 }
 
 #endif

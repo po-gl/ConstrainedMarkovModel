@@ -4,6 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <stdio.h>
+#include <sys/stat.h>
 #include "utils.h"
 
 using namespace std;
@@ -97,10 +99,10 @@ string Utils::readInTrainingSentences(string filePath) {
 
   if (file.is_open()) {
     buffer << file.rdbuf();
+    file.close();
   } else {
     printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
   }
-  file.close();
 
   return buffer.str();
 }
@@ -117,18 +119,18 @@ vector<vector<string> > Utils::processTrainingSentences(string text, int markovO
   for (const string &sentence : sentences) {
     // TODO: attach part of speech to word
 
-//    vector<string> words = Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)1234567890");
-    vector<string> words = Utils::split(sentence, "\\s0-9");
+    vector<string> words = Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)0-9");
+//    vector<string> words = Utils::split(sentence, "\\s0-9");
 
     // Handle (most) contractions
-//    for (int i = 0; i < words.size(); i++) {
-//      if (i == 0) continue;
-//
-//      if (words[i].find('\'') != string::npos) {
-//        words[i - 1].append(words[i]);
-//        words.erase(words.begin() + i);
-//      }
-//    }
+    for (int i = 0; i < words.size(); i++) {
+      if (i == 0) continue;
+
+      if (words[i].find('\'') != string::npos) {
+        words[i - 1].append(words[i]);
+        words.erase(words.begin() + i);
+      }
+    }
 
     // Combine words to increase the markov order
     if (markovOrder > 1) {
@@ -149,4 +151,66 @@ vector<vector<string> > Utils::processTrainingSentences(string text, int markovO
     }
   }
   return data;
+}
+
+
+vector< vector<string> > Utils::readFromCache(string fileName) {
+  vector< vector<string> > data;
+  string cacheFilePath = Utils::cacheDirectory + fileName + Utils::cacheSuffix;
+  ifstream file;
+  file.open(cacheFilePath, ios::in);
+  string line;
+
+  if (file.is_open()) {
+    while (getline(file, line)) {
+      data.push_back(split(line, ","));
+    }
+    file.close();
+  } else {
+    printf("ERROR::No file was found at %s\n", cacheFilePath.c_str());  // TODO: throw error
+  }
+
+  return data;
+}
+
+
+void Utils::writeToCache(string fileName, vector<vector<string> > trainingSentences) {
+
+  // Create cache directory if it doesn't already exist
+  if (mkdir(Utils::cacheDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1) {
+    if (errno == EEXIST) {
+    } else {
+      printf("ERROR::Unable to create directory %s\n", Utils::cacheDirectory.c_str());  // TODO: throw error
+    }
+  }
+
+  string cacheFilePath = Utils::cacheDirectory + fileName + Utils::cacheSuffix;
+  ofstream file;
+  file.open(cacheFilePath, ios::out);
+
+  if (file.is_open()) {
+    for (const auto &sentence : trainingSentences) {
+      for (const auto &word : sentence) {
+        file << word << ",";
+      }
+      file << "\n";
+    }
+    file.close();
+  } else {
+    printf("ERROR::Unable to open file at %s\n", cacheFilePath.c_str());  // TODO: throw error
+  }
+}
+
+
+string Utils::getBasename(string filePath) {
+  string basename;
+  regex directoryExp("[^/]+");
+  auto begin = sregex_iterator(filePath.begin(), filePath.end(), directoryExp);
+  auto end = sregex_iterator();
+
+  while (begin != end) {
+    basename = begin->str();
+    begin++;
+  }
+  return basename;
 }
