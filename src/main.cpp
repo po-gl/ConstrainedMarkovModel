@@ -9,7 +9,8 @@
 using namespace std;
 
 // TODO: Implement an interactive mode
-// TODO: Implement a cache of processed data and argment to use it "-p or --use-cache"
+// TODO: Make printing consistent
+// TODO: Print progress reading in files and processing data
 
 void printHelp() {
   printf("usage: markov [--debug | -d] -c constraint [-m] [-n] [-p] training_text\n");
@@ -175,10 +176,6 @@ int main(int argc, char *argv[]) {
       }
       printf("\n");
     }
-
-    printf("|------------------------------------------------------------------|\n");
-    printf("|==================================================================|\n");
-    printf("|------------------------------------------------------------------|\n");
   }
 
  return 0;

@@ -11,11 +11,21 @@
 
 using namespace std;
 
+// TODO: Separate out Markov Model from Constrained Markov Model
+// TODO: Serialize Markov Model as cache file
+
 // TODO: add better constraints (POS)
 
 // TODO: NHMM should work with words, not sentences >>> or, constraints could be added for a "beginning" and "end" to a mnemonic
 
 // TODO: Templates for non-string use cases
+
+ConstrainedMarkovModel::ConstrainedMarkovModel() {
+  // Initialize random
+  random_device rd;
+  randGenerator = mt19937(rd());
+  randDistribution = uniform_real_distribution<double>(0.0, 1.0);
+}
 
 void ConstrainedMarkovModel::train(vector< vector<string> >  trainingSequences, vector<string> constraint, int markovOrder) {
 
@@ -301,9 +311,6 @@ vector<int> ConstrainedMarkovModel::getTransitionMatricesSizes() {
 
 void ConstrainedMarkovModel::printTransitionProbs() {
   for (const auto &matrix : transitionMatrices) {
-    printf("|------------------------------------------------------------------|\n");
-    printf("|==================================================================|\n");
-    printf("|------------------------------------------------------------------|\n");
     for (const auto &firstWord : matrix) {
       printf("%20s >>> ", firstWord.first.c_str());
       double sum = 0.0;

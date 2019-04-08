@@ -40,9 +40,6 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
   for (int i = 0; i < constraintSentence.size(); i+=markovOrder) {
     int m = ceil((double)i / markovOrder);
     string constraintWord = constraintSentence[i];
-    printf("DEBUG:: constraintWord: %s\n", constraintWord.c_str());
-
-
 
     // auto matrix = transitionMatrices[i];
     for (auto node = transitionMatrices[m].begin(); node != transitionMatrices[m].end();) {

@@ -15,7 +15,7 @@ using namespace std;
 class ConstrainedMarkovModel {
 public:
   
-  ConstrainedMarkovModel() {};
+  ConstrainedMarkovModel();
   ~ConstrainedMarkovModel() {};
 
   /**

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Utils {
   const string cacheSuffix = ".CACHE";
-  const string cacheDirectory = "./cache/";
+  const string cacheDirectory = "./.cache/";
 
   /**
    * @brief Splits a string along delimiters

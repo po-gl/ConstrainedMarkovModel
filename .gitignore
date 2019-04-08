@@ -1,14 +1,21 @@
-# Clion make files
+# cmake files
 .idea/
 a.out.dSYM/
 cmake-build-debug/
+CMakeFiles/
 CMakeLists.txt
+CMakeCache.txt
+cmake_install.cmake
+Markov
 
 # vscode
 .vscode/
 
 # vim swap file
 *.swp
+
+# input
+input/
 
 # output
 a.out
