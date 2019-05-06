@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/Cellar/cmake/3.14.0/bin/cmake
+CMAKE_COMMAND = /usr/local/Cellar/cmake/3.14.3/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/Cellar/cmake/3.14.0/bin/cmake -E remove -f
+RM = /usr/local/Cellar/cmake/3.14.3/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/Users/porter/Documents/Code/CS/Machine Learning/Constrained Markov"
+CMAKE_SOURCE_DIR = "/Users/porter/Documents/Code/CS/Constrained Markov"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/porter/Documents/Code/CS/Machine Learning/Constrained Markov"
+CMAKE_BINARY_DIR = "/Users/porter/Documents/Code/CS/Constrained Markov"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = "/Users/porter/Documents/Code/CS/Machine Learning/Constrained
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/Cellar/cmake/3.14.0/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/Cellar/cmake/3.14.3/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/local/Cellar/cmake/3.14.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/Cellar/cmake/3.14.3/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/porter/Documents/Code/CS/Machine Learning/Constrained Markov/CMakeFiles" "/Users/porter/Documents/Code/CS/Machine Learning/Constrained Markov/CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/porter/Documents/Code/CS/Constrained Markov/CMakeFiles" "/Users/porter/Documents/Code/CS/Constrained Markov/CMakeFiles/progress.marks"
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/porter/Documents/Code/CS/Machine Learning/Constrained Markov/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/porter/Documents/Code/CS/Constrained Markov/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -231,6 +231,33 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/markov.o: src/markov.cpp.o
+
+.PHONY : src/markov.o
+
+# target to build an object file
+src/markov.cpp.o:
+	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/markov.cpp.o
+.PHONY : src/markov.cpp.o
+
+src/markov.i: src/markov.cpp.i
+
+.PHONY : src/markov.i
+
+# target to preprocess a source file
+src/markov.cpp.i:
+	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/markov.cpp.i
+.PHONY : src/markov.cpp.i
+
+src/markov.s: src/markov.cpp.s
+
+.PHONY : src/markov.s
+
+# target to generate assembly for a file
+src/markov.cpp.s:
+	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/markov.cpp.s
+.PHONY : src/markov.cpp.s
+
 src/mnemonicmarkov.o: src/mnemonicmarkov.cpp.o
 
 .PHONY : src/mnemonicmarkov.o
@@ -306,6 +333,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/markov.o"
+	@echo "... src/markov.i"
+	@echo "... src/markov.s"
 	@echo "... src/mnemonicmarkov.o"
 	@echo "... src/mnemonicmarkov.i"
 	@echo "... src/mnemonicmarkov.s"
