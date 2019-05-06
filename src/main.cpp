@@ -1,6 +1,8 @@
 #include <iostream>
 #include <time.h>
 #include <algorithm>
+#include <string>
+#include <string.h>
 #include "utils.h"
 #include "debug.h"
 #include "console.h"
@@ -34,17 +36,17 @@ int main(int argc, char *argv[]) {
   // TODO: create options class
   for (int i = 1; i < argc; i++) {
     // Debug flag
-    if (strncmp(argv[i], "--debug", 7) == 0 || strncmp(argv[i], "-d", 2) == 0) {
+    if (strcasecmp(argv[i], "--debug") == 0 || strcasecmp(argv[i], "-d") == 0) {
       debug = true;
       Debug::setDebugEnabled(true);
 
     // Help
-    } else if (strncmp(argv[i], "help", 4) == 0) {
+    } else if (strcasecmp(argv[i], "help") == 0) {
       printHelp();
       return 0;
 
     // Constraint flag
-    } else if (strncmp(argv[i], "-c", 2) == 0) {
+    } else if (strcasecmp(argv[i], "-c") == 0) {
       if (i+1 < argc) {
         string constraint = argv[++i];
         // Strip double quotes
@@ -54,19 +56,19 @@ int main(int argc, char *argv[]) {
       }
 
     // Markov Order
-    } else if (strncmp(argv[i], "-m", 2) == 0) {
+    } else if (strcasecmp(argv[i], "-m") == 0) {
       if (i+1 < argc) {
         markovOrder = atoi(argv[++i]);
       }
 
     // Generated sentence count
-    } else if (strncmp(argv[i], "-n", 2) == 0) {
+    } else if (strcasecmp(argv[i], "-n") == 0) {
       if (i+1 < argc) {
         sentenceCount = atoi(argv[++i]);
       }
 
     // Use cached files
-    } else if (strncmp(argv[i], "-p", 2) == 0) {
+    } else if (strcasecmp(argv[i], "-p") == 0) {
       useCache = true;
 
     // Training file path
