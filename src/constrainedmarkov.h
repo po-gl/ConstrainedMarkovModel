@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <random>
 
+#include "markov.h"
+
 using namespace std;
 
 
@@ -30,12 +32,11 @@ public:
    * 
    * Finally normalizes the probabilities
    * 
-   * @param trainingSequences vector of sentences to train on
+   * @param model trained markov model to use
    * @param constraint for NHMM
-   * @param markovOrder specifies the markov order of the model (the lookahead distance)
    * @author Porter Glines 1/13/19
    */
-  void train(vector< vector<string> > trainingSequences, vector<string> constraint, int markovOrder = 1);
+  void train(MarkovModel model, vector<string> constraint);
 
   /**
    * @brief Generates a sentence

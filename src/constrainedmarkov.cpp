@@ -8,11 +8,12 @@
 #include "utils.h"
 #include "console.h"
 #include "constrainedmarkov.h"
+#include "markov.h"
 
 using namespace std;
 
-// TODO: Separate out Markov Model from Constrained Markov Model
-// TODO: Serialize Markov Model as cache file
+// TODO: Serialize Markov Model as cache file (serializing unordered_map would probably require boost as it isn't contiguous like a vector)
+// TODO: Allocate the model's memory on heap with smart pointers
 
 // TODO: add better constraints (POS)
 
@@ -27,33 +28,18 @@ ConstrainedMarkovModel::ConstrainedMarkovModel() {
   randDistribution = uniform_real_distribution<double>(0.0, 1.0);
 }
 
-void ConstrainedMarkovModel::train(vector< vector<string> >  trainingSequences, vector<string> constraint, int markovOrder) {
+void ConstrainedMarkovModel::train(MarkovModel model, vector<string> constraint) {
 
-  bool debug = true; // TODO: Move timing prints to debug class
   time_t startTime;
-
-  this->markovOrder = markovOrder;  // default parameter = 1
-  this->sentenceLength = (int)constraint.size();
-  this->trainingSequences = trainingSequences;
 
   // Clear model data structures
   transitionMatrices.clear();
   transitionProbs.clear();
 
-
-  // iterate over sentences
-  for (vector<string> sentence : this->trainingSequences) {
-    // iterate over sentence words
-    for (int i = 0; i < sentence.size(); i++) {
-      string prevWord = (i == 0) ? START : sentence[i - 1];
-      string currWord = sentence[i];
-
-      increment(transitionProbs, prevWord, currWord);
-    }
-    if (!sentence.empty()) {
-      increment(transitionProbs, sentence[sentence.size() - 1], END);
-    }
-  }
+  this->markovOrder = model.getMarkovOrder();
+  this->trainingSequences = model.getTrainingSequences();
+  this->transitionProbs = model.getProbabilityMatrix();
+  this->sentenceLength = (int)constraint.size();
 
   // copy matrices for each word (note that START is added later, see addStartTransition())
   for (int i = 0; i < ceil(((double)sentenceLength) / markovOrder); i++) {
