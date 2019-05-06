@@ -3,13 +3,16 @@
 a.out.dSYM/
 cmake-build-debug/
 CMakeFiles/
-CMakeLists.txt
 CMakeCache.txt
 cmake_install.cmake
 Markov
+*.cbp
 
 # vscode
 .vscode/
+
+# .cache folder
+.cache/
 
 # vim swap file
 *.swp
