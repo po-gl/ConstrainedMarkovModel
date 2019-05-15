@@ -13,13 +13,11 @@ include_directories(data)
 set(SOURCE
     src/main.cpp
     src/markov.cpp
-    src/markov.h
     src/constrainedmarkov.cpp
-    src/constrainedmarkov.h
     src/mnemonicmarkov.cpp
-    src/mnemonicmarkov.h
     src/utils.cpp
-    src/utils.h src/debug.h src/debug.cpp src/console.h src/console.cpp)
+    src/debug.cpp
+    src/console.cpp)
 
 set(BOOST_ROOT "./boost")
 set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
