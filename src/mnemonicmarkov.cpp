@@ -6,6 +6,7 @@
 #include <random>
 
 #include "mnemonicmarkov.h"
+#include "console.h"
 #include "utils.h"
 
 using namespace std;
@@ -90,5 +91,5 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
     }
   }
 
-  printf("DEBUG:: Removed nodes: %d / %d\n", debugCount, debugCountTot); // 534472/549018
+  Console::debugPrint("%-35s: %d / %d\n", "Removed nodes", debugCount, debugCountTot);
 }

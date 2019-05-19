@@ -17,6 +17,8 @@ using namespace std;
 // TODO: Make printing consistent
 // TODO: Print progress reading in files and processing data
 
+// TODO: Use log probs to prevent underflow for really large sentences
+
 void printHelp() {
   printf("usage: markov [--debug | -d] -c constraint [-m] [-n] [-p] training_text\n");
 }
@@ -33,7 +35,6 @@ int main(int argc, char *argv[]) {
   bool useCache = false;
 
   time_t startTime;
-  time_t endTime;
 
   // Parse Arguments
   // TODO: create options class
@@ -85,115 +86,89 @@ int main(int argc, char *argv[]) {
     printHelp();
     return 0;
   }
-  // else if (constraints.empty()) {
-  //   printf("Constraint is needed.\n");
-  //   printHelp();
-  //   return 0;
-  // }
-
-  //////////////////////////////////////////////////////////////////////////
-
-  // MarkovModel model;
-
-  // auto trainingString = Utils::readInTrainingSentences(trainingFilePath);
-  // auto trainingSequences = Utils::processTrainingSentences(trainingString);
-
-  // model.train(trainingSequences);
-
-  // for (auto word : model.generateSentence(10)) {
-  //   printf("%s ", word.c_str());
-  // }
-  // printf("\n");
-
-  //////////////////////////////////////////////////////////////////////////
-
-  for (const auto &constraint : constraints) {
-    Console::debugPrint("%35s: %s\n", "Constraint", constraint.c_str());
+  else if (constraints.empty()) {
+    printf("Constraint is needed.\n");
+    printHelp();
+    return 0;
   }
 
 
+  // Non-constrained Markov model
+  MarkovModel markovModel;
+
   // Read/Pre-process training sequences
   vector< vector<string> > trainingSequences;
-  // if (useCache) {
-  //   // Read in training sentences from cache
-  //   startTime = clock();
-  //   trainingSequences = Utils::readFromCache(Utils::getBasename(trainingFilePath));
-  //   Console::debugPrint("%35s: %f\n", "Elapsed Time Reading Data From Cache", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-  // }
+  if (useCache) {
+    // Read in training sentences from cache
+    startTime = clock();
+    Utils::readFromCache(markovModel, Utils::getBasename(trainingFilePath));
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading From Cache", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+  }
 
-  if (trainingSequences.empty()){
-    // if (useCache)
-    //   Console::debugPrint("No cache found for file.\n");
+  // TODO: Rebuild cache reading it fails or if markov order is different
+  if (markovModel.getProbabilityMatrix().empty()){
+    if (useCache)
+      Console::debugPrint("No cache found for file.\n");
 
     // Read in training sentences
     startTime = clock();
     string trainingText = Utils::readInTrainingSentences(trainingFilePath);
-    Console::debugPrint("%35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
 
     // Process training sentences
     startTime = clock();
     trainingSequences = Utils::processTrainingSentences(trainingText, markovOrder);
-    Console::debugPrint("%35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-    Console::debugPrint("%35s: %d\n", "Training Sentence Count", trainingSequences.size());
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+    Console::debugPrint("%-35s: %d\n", "Training Sentence Count", trainingSequences.size());
 
-//     if (useCache)
-//       Utils::writeToCache(Utils::getBasename(trainingFilePath), trainingSequences);
+    markovModel.train(trainingSequences, markovOrder);
+
+    if (useCache)
+      Utils::writeToCache(markovModel, Utils::getBasename(trainingFilePath));
   }
 
 
+  // Constrained Markov model
   MnemonicMarkovModel model;
-  MarkovModel markovModel;
 
+  // Apply constraints to model
   for (const auto &constraint : constraints) {
+    Console::debugPrint("\n%-35s: %d\n", "Markov Order", markovOrder);
+    Console::debugPrint("%-35s: %s\n", "Constraint", constraint.c_str());
 
+    // Train model
     startTime = clock();
-
-    markovModel.train(trainingSequences, markovOrder);
     model.train(markovModel, Utils::splitAndLower(constraint, "\\s,"));
+    Console::debugPrint("%-35s: %f\n", "Elapsed Training Time", (float)(clock() - startTime) / CLOCKS_PER_SEC);
 
-    endTime = clock();
-    time_t trainingTime = endTime - startTime;
-
-
+    // Generate sentences
     startTime = clock();
     vector<vector<string> > generatedSentences;
     generatedSentences.reserve(sentenceCount);
     for (int i = 0; i < sentenceCount; i++) {
       generatedSentences.push_back(model.generateSentence());
     }
-    endTime = clock();
-    time_t sentenceGenerationTime = endTime - startTime;
+    Console::debugPrint("%-35s: %f\n", "Elapsed Sentence(s) Gen Time", (float)(clock() - startTime) / CLOCKS_PER_SEC);
 
-
-    if (debug) {  // Print debug information
-      printf("\n");
-      printf("%45s\n", "=== DEBUG INFORMATION ===");
-      printf("%35s: %s\n", "Constraint", constraint.c_str());
-      printf("%35s: %d\n", "Markov Order", markovOrder);
-
-      printf("%35s: %f\n", "Elapsed Training Time (sec)", (float) trainingTime / CLOCKS_PER_SEC);
-      printf("%35s: %f\n", "Elapsed Sentence(s) Gen Time (sec)", (float) sentenceGenerationTime / CLOCKS_PER_SEC);
-
-      printf("%35s: ", "Transition Matrix sizes");
-      vector<int> sizes = model.getTransitionMatricesSizes();
-      for (auto size : sizes) {
-        printf("%d --> ", size);
-      }
-      printf("\n");
-      printf("\n");
-
-      printf("%35s (%d) ===\n", "=== Generated Sentences", sentenceCount);
-      printf("%35s: %s\n", "(prob)", "(sentence)");
-      for (const auto &sentence : generatedSentences) {
-        printf("%35f: ", model.getSentenceProbability(sentence));
-
-        for (const string &word : sentence) {
-          printf("%s ", word.c_str());
-        }
-        printf("\n");
-      }
+    // Print matrix sizes (debug)
+    Console::debugPrint("%-35s: ", "Transition Matrix sizes");
+    vector<int> sizes = model.getTransitionMatricesSizes();
+    for (auto size : sizes) {
+      Console::debugPrint("%d --> ", size);
     }
+    Console::debugPrint("\n");
 
+    // Print generated sentences with probabilities (debug)
+    Console::debugPrint("\n%s  (%d)\n", "Generated Sentences", sentenceCount);
+    Console::debugPrint("%-10s: %s\n", "(prob)", "(sentence)");
+    for (const auto &sentence : generatedSentences) {
+      Console::debugPrint("%-10f: ", model.getSentenceProbability(sentence));
+
+      for (const string &word : sentence) {
+        Console::debugPrint("%s ", word.c_str());
+      }
+      Console::debugPrint("\n");
+    }
 
     // Print standard output
     for (const auto &sentence : generatedSentences) {

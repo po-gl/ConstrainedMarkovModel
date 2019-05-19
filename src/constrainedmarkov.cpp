@@ -12,7 +12,6 @@
 
 using namespace std;
 
-// TODO: Serialize Markov Model as cache file (serializing unordered_map would probably require boost as it isn't contiguous like a vector)
 // TODO: Allocate the model's memory on heap with smart pointers
 
 // TODO: add better constraints (POS)
@@ -50,22 +49,22 @@ void ConstrainedMarkovModel::train(MarkovModel model, vector<string> constraint)
   // Apply constraint by removing nodes that violate the constraint
   startTime = clock();
   applyConstraints(constraint, markovOrder);
-  Console::debugPrint("%35s: %f\n", "Elapsed Time Applying Constraints", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+  Console::debugPrint("%-35s: %f\n", "Elapsed Time Applying Constraints", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Enforce arc-consistency
   startTime = clock();
   removeDeadNodes();
-  Console::debugPrint("%35s: %f\n", "Elapsed Time Removing Nodes", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+  Console::debugPrint("%-35s: %f\n", "Elapsed Time Removing Nodes", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Add in start transition matrices
   startTime = clock();
   addStartTransition();
-  Console::debugPrint("%35s: %f\n", "Elapsed Time Adding Start Matrix", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+  Console::debugPrint("%-35s: %f\n", "Elapsed Time Adding Start Matrix", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Normalize as described in Pachet's paper
   startTime = clock();
   normalize();
-  Console::debugPrint("%35s: %f\n", "Elapsed Time Normalizing", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+  Console::debugPrint("%-35s: %f\n", "Elapsed Time Normalizing", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 }
 
 
