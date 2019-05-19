@@ -90,9 +90,6 @@ vector<string> Utils::splitAndLower(string str, string delims) {
 }
 
 
-// Idea: read in sentences into vectors as fast as possible first, then thread remove non-words
-
-
 string Utils::readInTrainingSentences(string filePath) {
   ifstream file;
   stringstream buffer;
