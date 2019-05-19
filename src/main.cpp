@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
 
   time_t startTime; // used for debug timing
 
+  // 1. Train non-constrained Markov model
 
   // Non-constrained Markov model
   MarkovModel markovModel;
@@ -76,6 +77,8 @@ int main(int argc, char *argv[]) {
       Utils::writeToCache(markovModel, Utils::getBasename(options.getTrainingFilePath()));
   }
 
+
+  // 2. Apply constraints to markov model
 
   // Constrained Markov model
   MnemonicMarkovModel model;
