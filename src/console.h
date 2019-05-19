@@ -14,6 +14,7 @@ using namespace std;
 class Console {
 public:
     static void debugPrint(const char *format, ...);
+    static void printHelp();
 };
 
 #endif //MARKOV_CONSOLE_H

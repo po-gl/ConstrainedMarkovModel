@@ -14,14 +14,9 @@
 using namespace std;
 
 // TODO: Implement an interactive mode
-// TODO: Make printing consistent
 // TODO: Print progress reading in files and processing data
 
 // TODO: Use log probs to prevent underflow for really large sentences
-
-void printHelp() {
-  printf("usage: markov [--debug | -d] -c constraint [-m] [-n] [-p] training_text\n");
-}
 
 int main(int argc, char *argv[]) {
   Options options;
@@ -29,14 +24,18 @@ int main(int argc, char *argv[]) {
   // Parse Arguments
   options.parseArguments(argc, argv);
 
-  if (options.getTrainingFilePath().empty()) {
+  if (options.getHelp()) {
+    Console::printHelp();
+    return 0;
+  }
+  else if (options.getTrainingFilePath().empty()) {
     printf("Training text is needed.\n");
-    printHelp();
+    Console::printHelp();
     return 0;
   }
   else if (options.getConstraints().empty()) {
     printf("Constraint is needed.\n");
-    printHelp();
+    Console::printHelp();
     return 0;
   }
 
