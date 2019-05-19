@@ -285,6 +285,33 @@ src/mnemonicmarkov.cpp.s:
 	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/mnemonicmarkov.cpp.s
 .PHONY : src/mnemonicmarkov.cpp.s
 
+src/options.o: src/options.cpp.o
+
+.PHONY : src/options.o
+
+# target to build an object file
+src/options.cpp.o:
+	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/options.cpp.o
+.PHONY : src/options.cpp.o
+
+src/options.i: src/options.cpp.i
+
+.PHONY : src/options.i
+
+# target to preprocess a source file
+src/options.cpp.i:
+	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/options.cpp.i
+.PHONY : src/options.cpp.i
+
+src/options.s: src/options.cpp.s
+
+.PHONY : src/options.s
+
+# target to generate assembly for a file
+src/options.cpp.s:
+	$(MAKE) -f CMakeFiles/Markov.dir/build.make CMakeFiles/Markov.dir/src/options.cpp.s
+.PHONY : src/options.cpp.s
+
 src/utils.o: src/utils.cpp.o
 
 .PHONY : src/utils.o
@@ -339,6 +366,9 @@ help:
 	@echo "... src/mnemonicmarkov.o"
 	@echo "... src/mnemonicmarkov.i"
 	@echo "... src/mnemonicmarkov.s"
+	@echo "... src/options.o"
+	@echo "... src/options.i"
+	@echo "... src/options.s"
 	@echo "... src/utils.o"
 	@echo "... src/utils.i"
 	@echo "... src/utils.s"

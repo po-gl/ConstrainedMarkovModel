@@ -17,6 +17,7 @@ set(SOURCE
     src/mnemonicmarkov.cpp
     src/utils.cpp
     src/debug.cpp
+    src/options.cpp
     src/console.cpp)
 
 set(BOOST_ROOT "./boost")
