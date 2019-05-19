@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <sys/stat.h>
+
 #include "utils.h"
 
 using namespace std;
@@ -151,54 +152,6 @@ vector<vector<string> > Utils::processTrainingSentences(string text, int markovO
     }
   }
   return data;
-}
-
-
-vector< vector<string> > Utils::readFromCache(string fileName) {
-  vector< vector<string> > data;
-  string cacheFilePath = Utils::cacheDirectory + fileName + Utils::cacheSuffix;
-  ifstream file;
-  file.open(cacheFilePath, ios::in);
-  string line;
-
-  if (file.is_open()) {
-    while (getline(file, line)) {
-      data.push_back(split(line, ","));
-    }
-    file.close();
-  } else {
-    printf("ERROR::No file was found at %s\n", cacheFilePath.c_str());  // TODO: throw error
-  }
-
-  return data;
-}
-
-
-void Utils::writeToCache(string fileName, vector<vector<string> > trainingSentences) {
-
-  // Create cache directory if it doesn't already exist
-  if (mkdir(Utils::cacheDirectory.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1) {
-    if (errno == EEXIST) {
-    } else {
-      printf("ERROR::Unable to create directory %s\n", Utils::cacheDirectory.c_str());  // TODO: throw error
-    }
-  }
-
-  string cacheFilePath = Utils::cacheDirectory + fileName + Utils::cacheSuffix;
-  ofstream file;
-  file.open(cacheFilePath, ios::out);
-
-  if (file.is_open()) {
-    for (const auto &sentence : trainingSentences) {
-      for (const auto &word : sentence) {
-        file << word << ",";
-      }
-      file << "\n";
-    }
-    file.close();
-  } else {
-    printf("ERROR::Unable to open file at %s\n", cacheFilePath.c_str());  // TODO: throw error
-  }
 }
 
 

@@ -18,6 +18,10 @@ MarkovModel::MarkovModel() {
   random_device rd;
   randGenerator = mt19937(rd());
   randDistribution = uniform_real_distribution<double>(0.0, 1.0);
+
+  this->markovOrder = 0;
+  this->trainingSequences = vector< vector<string> >();
+  this->transitionProbs = unordered_map< string, unordered_map<string, double> >();
 }
 
 void MarkovModel::train(vector< vector<string> > trainingSequences, int markovOrder) {
@@ -179,3 +183,11 @@ void MarkovModel::printTransitionProbs() {
     printf("\n");
   }
 }
+
+
+// template<class Archive>
+// void MarkovModel::serialize(Archive &ar, const unsigned int /*version*/) {
+//   ar & this->markovOrder;
+//   ar & this->trainingSequences;
+//   ar & this->transitionProbs;
+// }

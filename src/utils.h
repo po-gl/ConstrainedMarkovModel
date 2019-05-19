@@ -1,5 +1,19 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <regex>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <stdio.h>
+#include <sys/stat.h>
+
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/unordered_map.hpp>
+// #include <boost/archive/text_iarchive.hpp>
+// #include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 
 using namespace std;
 
@@ -70,23 +84,25 @@ namespace Utils {
    * @return 2D vector of words in sentences
    * @author Porter Glines 3/5/19
    */
-  vector< vector<string> > processTrainingSentences(string text, int markovOrder);
+  vector< vector<string> > processTrainingSentences(string text, int markovOrder=1);
 
   /**
-   * Read from pre-processed training sequence cache
+   * Read from cache
+   * @param ret reference to object to populate from cache
    * @param fileName name of original data source file
-   * @return pre-processed training sequences from cache
-   * @author Porter Glines 3/7/19
+   * @author Porter Glines 5/13/19
    */
-  vector< vector<string> > readFromCache(string fileName);
+  template <class T>
+  void readFromCache(T &ret, string fileName);
 
   /**
-   * Write to pre-processed training sequence cache
+   * Write to cache
+   * @param data object to write to cache
    * @param fileName name of original data source file
-   * @param trainingSentences pre-processed training sequences
-   * @author Porter Glines 3/7/19
+   * @author Porter Glines 5/13/19
    */
-  void writeToCache(string fileName, vector<vector<string> > trainingSentences);
+  template <class T>
+  void writeToCache(T data, string fileName);
 
   /**
    * @brief returns the basename for a Unix filepath
@@ -97,5 +113,7 @@ namespace Utils {
    */
   string getBasename(string filePath);
 }
+
+#include "utils.inl"
 
 #endif

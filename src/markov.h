@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <random>
+#include <boost/serialization/access.hpp>
 
 using namespace std;
 
@@ -97,6 +98,17 @@ private:
 
   vector< vector<string> > trainingSequences;
 
+  friend class boost::serialization::access;
+
+  template<class Archive>
+  void serialize(Archive &ar, const unsigned int /*version*/);
+  // template<class Archive>
+  // void serialize(Archive &ar, const unsigned int /*version*/) {
+  //   ar & this->markovOrder;
+  //   ar & this->trainingSequences;
+  //   ar & this->transitionProbs;
+  // }
+
   /**
    * @brief Get the next word in a sentence given the previous word
    * 
@@ -145,5 +157,7 @@ private:
    */
   void increment(unordered_map< string, unordered_map<string, double> > &transitionProbs, string word, const string& nextWord);
 };
+
+#include "markov.inl"
 
 #endif
