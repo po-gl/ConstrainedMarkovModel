@@ -14,6 +14,8 @@ Options::Options() {
   this->sentenceCount = 1;
   this->useCache = false;
   this->trainingFilePath = "";
+  this->port = 7799;  // unassigned port
+  this->shouldRunAsServer = false;
 }
 
 void Options::parseArguments(int argc, char *argv[]) {
@@ -52,6 +54,16 @@ void Options::parseArguments(int argc, char *argv[]) {
     } else if (strcasecmp(argv[i], "--cache") == 0) {
       this->useCache = true;
 
+    // Port number
+    } else if (strcasecmp(argv[i], "--port") == 0 || strcasecmp(argv[i], "-p") == 0) {
+      if (i+1 < argc) {
+        this->port = atoi(argv[++i]);
+      }
+
+    // Should run as server
+    } else if (strcasecmp(argv[i], "--server") == 0 || strcasecmp(argv[i], "-s") == 0) {
+      this->shouldRunAsServer = true;
+
     // Training file path
     } else {
       this->trainingFilePath = argv[i];
@@ -85,4 +97,12 @@ bool Options::getUseCache() {
 
 string Options::getTrainingFilePath() {
   return this->trainingFilePath;
+}
+
+int Options::getPort() {
+  return this->port;
+}
+
+bool Options::getShouldRunAsServer() {
+  return this->shouldRunAsServer;
 }

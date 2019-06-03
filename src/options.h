@@ -89,6 +89,23 @@ public:
    */
   string getTrainingFilePath();
 
+  /**
+   * @brief Get the port object
+   * 
+   * @return int port number
+   * @author Porter Glines 2/23/19
+   */
+  int getPort();
+
+  /**
+   * @brief Get the shouldRunAsServer object
+   * 
+   * @return true if program should run as socket server
+   * @author Porter Glines 2/23/19
+   */
+  bool getShouldRunAsServer();
+
+
 private:
   bool debug;
   bool help;
@@ -97,6 +114,8 @@ private:
   int sentenceCount;
   bool useCache;
   string trainingFilePath;
+  int port;
+  bool shouldRunAsServer;
 };
 
 #endif
