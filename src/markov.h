@@ -78,9 +78,9 @@ public:
 
 protected:
   /// Marker representing the start of a sentence
-  const string START = "<<START>>";
+  string START = "<<START>>";
   /// Marker representing the end of a sentence
-  const string END = "<<END>>";
+  string END = "<<END>>";
 
   /// Specifies the markov order (lookahead distance) for the model
   int markovOrder;
