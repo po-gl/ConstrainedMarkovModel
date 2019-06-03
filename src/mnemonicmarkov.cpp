@@ -44,7 +44,8 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
 
     // auto matrix = transitionMatrices[i];
     for (auto node = transitionMatrices[m].begin(); node != transitionMatrices[m].end();) {
-      vector<string> nodeSequence = Utils::split(node->first, "\\s");  // split on spaces
+      // vector<string> nodeSequence = Utils::split(node->first, "\\s");  // split on spaces
+      vector<string> nodeSequence = { node->first };
       auto testfirst = node->first;
       auto testsecond = node->second;
 
