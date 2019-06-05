@@ -15,5 +15,5 @@ void Console::debugPrint(const char * format, ...) {
 }
 
 void Console::printHelp() {
-  printf("usage: markov [--debug | -d] [--constraint | -c] constraint [--markovorder | -m] [-n] [--cache] training_text\n");
+  printf("usage: markov [--debug | -d] [--constraint | -c] constraint [--markovorder | -m] [-n] [--cache] [--port | -p] [--server | -s] training_text\n");
 }
