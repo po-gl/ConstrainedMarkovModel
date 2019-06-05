@@ -41,10 +41,11 @@ void ConstrainedMarkovModel::train(MarkovModel model, vector<string> constraint)
   this->sentenceLength = (int)constraint.size();
 
   // copy matrices for each word (note that START is added later, see addStartTransition())
+  startTime = clock();
   for (int i = 0; i < ceil(((double)sentenceLength) / markovOrder); i++) {
     transitionMatrices.push_back(transitionProbs);
   }
-
+  Console::debugPrint("%-35s: %f\n", "Elapsed Time Copying Matrices", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Apply constraint by removing nodes that violate the constraint
   startTime = clock();
@@ -291,6 +292,11 @@ vector<int> ConstrainedMarkovModel::getTransitionMatricesSizes() {
     sizes.push_back((int)transitionMatrices[i].size());
   }
   return sizes;
+}
+
+
+vector< vector<string> > ConstrainedMarkovModel::getTrainingSequences() {
+  return this->trainingSequences;
 }
 
 

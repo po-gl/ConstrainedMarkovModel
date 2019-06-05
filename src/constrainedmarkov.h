@@ -77,6 +77,14 @@ public:
    */
   vector<int> getTransitionMatricesSizes();
 
+  /**
+   * @brief Get the Training Sequences object
+   * 
+   * @return vector< vector<string> > training sequences
+   * @author Porter Glines 5/24/19
+   */
+  vector< vector<string> > getTrainingSequences();
+
 
 protected:
   /// Marker representing the start of a sentence
