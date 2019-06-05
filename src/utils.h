@@ -65,6 +65,17 @@ namespace Utils {
   vector< vector<string> > splitAll(string str, string sentenceDelims, string wordDelims);
 
   /**
+   * @brief Cleans string constraint
+   * 
+   * If a constraint is a single word, place a space between
+   * every letter
+   * 
+   * @param constraint 
+   * @return string 
+   */
+  string cleanConstraint(string constraint);
+
+  /**
    * @brief Read in training text
    *
    * @param filePath path to training text

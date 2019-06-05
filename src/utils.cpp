@@ -89,6 +89,23 @@ vector<string> Utils::splitAndLower(string str, string delims) {
   return ret;
 }
 
+string Utils::cleanConstraint(string constraint) {
+  // Return the same constraint if a space is found
+  for (int i = 0; i < constraint.size(); i++) {
+    if (constraint[i] == ' ') {
+      return constraint;
+    }
+  }
+
+  string newConstraint;
+  // Else split constraint into individual letters
+  for (const auto &letter : constraint) {
+    newConstraint += letter;
+    newConstraint += " ";
+  }
+  newConstraint.erase(newConstraint.size()-1);
+  return newConstraint;
+}
 
 string Utils::readInTrainingSentences(string filePath) {
   ifstream file;
@@ -99,7 +116,8 @@ string Utils::readInTrainingSentences(string filePath) {
     buffer << file.rdbuf();
     file.close();
   } else {
-    printf("ERROR::No file was found at %s\n", filePath.c_str());  // TODO: throw error
+    printf("ERROR::No file was found %s\n", filePath.c_str());  // TODO: throw error
+    exit(-1);
   }
 
   return buffer.str();
