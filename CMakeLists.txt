@@ -10,6 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 include_directories(.)
 include_directories(data)
 
+
 set(SOURCE
     src/main.cpp
     src/markov.cpp
@@ -18,8 +19,10 @@ set(SOURCE
     src/utils.cpp
     src/debug.cpp
     src/options.cpp
-    src/console.cpp)
+    src/console.cpp
+    src/server.cpp)
 
+# TODO: make sure boost for vectors is included in boost folder
 set(BOOST_ROOT "./boost")
 set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
 set(Boost_USE_DEBUG_LIBS         OFF) # ignore debug libs and
