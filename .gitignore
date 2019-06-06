@@ -19,8 +19,8 @@ Makefile
 # vim swap file
 *.swp
 
-# input
-input/
+# input text
+#input/
 
 # output
 a.out
