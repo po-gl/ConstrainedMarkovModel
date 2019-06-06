@@ -1,5 +1,8 @@
 // Inline definitions
 
+#include <mutex>
+#include <condition_variable>
+
 template<class T>
 ThreadQueue<T>::ThreadQueue(std::mutex *mutex, std::condition_variable *cv) : mutex(mutex), cv(cv) {}
 

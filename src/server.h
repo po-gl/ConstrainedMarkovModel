@@ -2,6 +2,8 @@
 #define MARKOVSERVER_H
 
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #include "threadqueue.h"
 #include "options.h"
