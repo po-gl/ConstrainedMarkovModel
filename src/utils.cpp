@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
-#include <regex>
+// #include <regex>
+#include <boost/regex.hpp>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -15,13 +16,13 @@ using namespace std;
 vector< vector<string> > Utils::splitAll(string str, string sentenceDelims, string wordDelims) {
   vector< vector<string> > ret;
 
-  regex sentenceExp("[^" + sentenceDelims + "]+");
-  auto begin = sregex_iterator(str.begin(), str.end(), sentenceExp);
-  auto end = sregex_iterator();
+  boost::regex sentenceExp("[^" + sentenceDelims + "]+");
+  auto begin = boost::sregex_iterator(str.begin(), str.end(), sentenceExp);
+  auto end = boost::sregex_iterator();
 
-  regex wordExp("[^" + wordDelims + "]+");
-  regex_iterator<string::const_iterator> sentenceBegin;
-  regex_iterator<string::const_iterator> sentenceEnd = sregex_iterator();
+  boost::regex wordExp("[^" + wordDelims + "]+");
+  boost::regex_iterator<string::const_iterator> sentenceBegin;
+  boost::regex_iterator<string::const_iterator> sentenceEnd = boost::sregex_iterator();
 
   string sentence;
   vector<string> workingSentence;
@@ -29,7 +30,7 @@ vector< vector<string> > Utils::splitAll(string str, string sentenceDelims, stri
 //    auto debugTime = clock();
     sentence = begin->str();
 
-    sentenceBegin = sregex_iterator(sentence.begin(), sentence.end(), wordExp);
+    sentenceBegin = boost::sregex_iterator(sentence.begin(), sentence.end(), wordExp);
 
     workingSentence = vector<string>();
 //    workingSentence.reserve(16);
@@ -54,9 +55,9 @@ vector< vector<string> > Utils::splitAll(string str, string sentenceDelims, stri
 vector<string> Utils::split(string str, string delims) {
   vector<string> ret;
 
-  regex wordsExp("[^" + delims + "]+");
-  auto begin = sregex_iterator(str.begin(), str.end(), wordsExp);
-  auto end = sregex_iterator();
+  boost::regex wordsExp("[^" + delims + "]+");
+  auto begin = boost::sregex_iterator(str.begin(), str.end(), wordsExp);
+  auto end = boost::sregex_iterator();
 
   while (begin != end) {
     ret.push_back(begin->str());
@@ -75,9 +76,9 @@ vector<string> Utils::split(string str, string delims) {
 vector<string> Utils::splitAndLower(string str, string delims) {
   vector<string> ret;
 
-  regex wordsExp("[^" + delims + "]+");
-  auto begin = sregex_iterator(str.begin(), str.end(), wordsExp);
-  auto end = sregex_iterator();
+  boost::regex wordsExp("[^" + delims + "]+");
+  auto begin = boost::sregex_iterator(str.begin(), str.end(), wordsExp);
+  auto end = boost::sregex_iterator();
 
   while (begin != end) {
     string str = begin->str();
@@ -172,9 +173,9 @@ vector<vector<string> > Utils::processTrainingSentences(string text, int markovO
 
 string Utils::getBasename(string filePath) {
   string basename;
-  regex directoryExp("[^/]+");
-  auto begin = sregex_iterator(filePath.begin(), filePath.end(), directoryExp);
-  auto end = sregex_iterator();
+  boost::regex directoryExp("[^/]+");
+  auto begin = boost::sregex_iterator(filePath.begin(), filePath.end(), directoryExp);
+  auto end = boost::sregex_iterator();
 
   while (begin != end) {
     basename = begin->str();
