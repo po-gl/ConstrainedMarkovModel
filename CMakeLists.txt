@@ -22,16 +22,9 @@ set(SOURCE
     src/console.cpp
     src/server.cpp)
 
-# TODO: make sure boost for vectors is included in boost folder
-set(BOOST_ROOT "./boost")
-set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
-set(Boost_USE_DEBUG_LIBS         OFF) # ignore debug libs and
-set(Boost_USE_RELEASE_LIBS       ON)  # only find release libs
-set(Boost_USE_STATIC_RUNTIME    OFF)
+include_directories(${CMAKE_SOURCE_DIR})
+add_subdirectory(libs)
 
-find_package(Boost 1.69.0 COMPONENTS system serialization)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
-  add_executable(${PROJECT_NAME} ${SOURCE})
-  target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-endif()
+add_executable(${PROJECT_NAME} ${SOURCE})
+target_link_libraries(${PROJECT_NAME} MiniBoost)
+
