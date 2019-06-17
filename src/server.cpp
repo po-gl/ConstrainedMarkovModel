@@ -77,15 +77,43 @@ void Server::performWork(int threadID, bool *shouldStop,
 
     auto generatedSentences = Main::generateSentences(*options, model);
 
-    // Send sentences back to client
+
+    // Send sentences + data back to client
     string builder;
+
+    // Mnemonic sentences
     for (const auto &sentence : generatedSentences) {
       for (const auto &word : sentence) {
         builder += word + " ";
       }
-      builder += ":";
+      builder += "::";
     }
-    builder.erase(builder.size()-1); // remove last delimiter
+    builder.pop_back();
+    builder.pop_back();
+
+    builder += "$$$";
+
+    // Words removed by constraints
+    for (int i = 0; i < generatedSentences.size(); i++) {
+      for (int j = 0; j < model.getSentenceLength(); j++) {
+        builder += model.sampleRemovedNodeByConstraint(j) + " ";
+      }
+      builder += "::";
+    }
+    builder.pop_back();
+    builder.pop_back();
+
+    builder += "$$$";
+
+    // Words removed by Arc consistency
+    for (int i = 0; i < generatedSentences.size(); i++) {
+      for (int j = 0; j < model.getSentenceLength(); j++) {
+        builder += model.sampleRemovedNodeByArcConsistency(j) + " ";
+      }
+      builder += "::";
+    }
+    builder.pop_back();
+    builder.pop_back();
 
     int sval = write(data.accepted_fd, builder.c_str(), builder.size());
     if (sval < 0) {
