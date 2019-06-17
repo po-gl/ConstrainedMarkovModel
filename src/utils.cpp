@@ -139,15 +139,22 @@ vector<vector<string> > Utils::processTrainingSentences(string text, int markovO
     vector<string> words = Utils::split(sentence, "\\s,#@$%&;:\"\\(\\)0-9");
 //    vector<string> words = Utils::split(sentence, "\\s0-9");
 
-    // Handle (most) contractions
     for (int i = 0; i < words.size(); i++) {
       if (i == 0) continue;
 
+      // Remove specific elements
+      if (words[i] == "<p>") {
+        words.erase(words.begin() + i);
+        continue;
+      }
+
+      // Handle (most) contractions
       if (words[i].find('\'') != string::npos) {
         words[i - 1].append(words[i]);
         words.erase(words.begin() + i);
       }
     }
+
 
     // Combine words to increase the markov order
     if (markovOrder > 1) {
