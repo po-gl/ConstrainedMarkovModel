@@ -47,6 +47,8 @@ void ConstrainedMarkovModel::train(MarkovModel model, vector<string> constraint)
   }
   Console::debugPrint("%-35s: %f\n", "Elapsed Time Copying Matrices", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
+  initRemovedNodeArrays(transitionMatrices.size());
+
   // Apply constraint by removing nodes that violate the constraint
   startTime = clock();
   applyConstraints(constraint, markovOrder);
@@ -57,7 +59,7 @@ void ConstrainedMarkovModel::train(MarkovModel model, vector<string> constraint)
   removeDeadNodes();
   Console::debugPrint("%-35s: %f\n", "Elapsed Time Removing Nodes", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
-  // Add in start transition matrices
+  // Add in start transition matrices (<<START>> -> "foo")
   startTime = clock();
   addStartTransition();
   Console::debugPrint("%-35s: %f\n", "Elapsed Time Adding Start Matrix", (float)(clock() - startTime)/CLOCKS_PER_SEC);
@@ -83,7 +85,6 @@ void ConstrainedMarkovModel::increment(unordered_map< string, unordered_map<stri
 }
 
 
-// TODO FIX: The last transition table doesn't have any nodes removed; they are ignored when generating, but shouldn't be there?
 void ConstrainedMarkovModel::removeDeadNodes() {
   // Enforce arc-consistency
   for (int i = (int)transitionMatrices.size() - 1; i > 0; i--) {
@@ -108,6 +109,7 @@ void ConstrainedMarkovModel::removeDeadNodes() {
 
       // Remove a node if there are no edges coming out of it
       if (prevWordMap->empty()) {
+        removedNodesbyArcConsistency[i-1].push_back(iter->first);  // Save removed nodes
         iter = prevWordMatrix->erase(iter);
       } else {
         iter++;
@@ -281,6 +283,41 @@ unordered_map<string, int> ConstrainedMarkovModel::getWordFrequencies(vector< ve
     }
   }
   return frequencies;
+}
+
+
+string ConstrainedMarkovModel::sampleRemovedNodeByConstraint(int layerIndex) {
+  return sampleRemovedNodes(removedNodesbyConstraint, layerIndex);
+}
+
+
+string ConstrainedMarkovModel::sampleRemovedNodeByArcConsistency(int layerIndex) {
+  return sampleRemovedNodes(removedNodesbyArcConsistency, layerIndex);
+}
+
+
+string ConstrainedMarkovModel::sampleRemovedNodes(vector< vector<string> > nodes, int layerIndex) {
+  if (nodes[layerIndex].size() == 0) {
+    return "";
+  }
+  double randVal = randDistribution(randGenerator);
+  double wordFraction = 1 / (float)nodes[layerIndex].size();
+
+  double sum = 0.0;
+  for (const auto &word : nodes[layerIndex]) {
+    sum += wordFraction;
+
+    if (sum > randVal) {
+      return word;
+    }
+  }
+  return "";  // TODO: throw error
+}
+
+
+void ConstrainedMarkovModel::initRemovedNodeArrays(int arraySize) {
+  removedNodesbyConstraint.resize(arraySize);
+  removedNodesbyArcConsistency.resize(arraySize);
 }
 
 

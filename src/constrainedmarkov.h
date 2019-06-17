@@ -85,6 +85,18 @@ public:
    */
   vector< vector<string> > getTrainingSequences();
 
+  /**
+   * @brief 
+   * 
+   */
+  string sampleRemovedNodeByConstraint(int layerIndex);
+
+  /**
+   * @brief 
+   * 
+   */
+  string sampleRemovedNodeByArcConsistency(int layerIndex);
+
 
 protected:
   /// Marker representing the start of a sentence
@@ -106,6 +118,7 @@ protected:
   /// Transition probability matrices between words
   vector< unordered_map< string, unordered_map<string, double> > > transitionMatrices;
 
+  vector< vector<string> > removedNodesbyConstraint;
 
 private:
   /// Stores training sentences used to train the model
@@ -113,6 +126,9 @@ private:
 
   /// Original transition probability matrices mapping words -> (word, prob), (word, prob)...
   unordered_map< string, unordered_map<string, double> > transitionProbs;
+
+  ///
+  vector< vector<string> > removedNodesbyArcConsistency;
 
   /**
    * @brief Apply constraints to the transition matrices
@@ -196,6 +212,18 @@ private:
    * @param nextWord next word
    */
   void increment(unordered_map< string, unordered_map<string, double> > &transitionProbs, string word, string nextWord);
+
+  /**
+   * @brief 
+   * 
+   */
+  string sampleRemovedNodes(vector< vector<string> > nodes, int layerIndex);
+
+  /**
+   * @brief 
+   * 
+   */
+  void initRemovedNodeArrays(int arraySize);
 };
 
 #endif

@@ -83,6 +83,7 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
       if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
 //      if (!firstCharMatches || !wordLengthMet) {
 //      if (!firstCharMatches) {
+        removedNodesbyConstraint[m].push_back(node->first);  // Save removed nodes
         node = transitionMatrices[m].erase(node);
         debugCount++;
       } else {
