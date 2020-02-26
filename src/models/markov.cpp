@@ -43,7 +43,7 @@ MarkovModel::MarkovModel(Options options) {
   if (options.getUseCache()) {
     // Read in training sentences from cache
     startTime = clock();
-    Utils::readFromCache(*this, Utils::getBasename(options.getTrainingFilePath()));
+    Utils::readFromCache(*this, Utils::getBasename(options.getTrainingFilePath()).append("m").append(to_string(options.getMarkovOrder())).append("l").append(to_string(options.getTrainingSentenceLimit())));
     Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading From Cache", (float) (clock() - startTime) / CLOCKS_PER_SEC);
   }
 
@@ -67,7 +67,7 @@ MarkovModel::MarkovModel(Options options) {
 
     if (options.getUseCache())
       // Write to cache
-      Utils::writeToCache(this, Utils::getBasename(options.getTrainingFilePath()));
+      Utils::writeToCache(this, Utils::getBasename(options.getTrainingFilePath()).append("m").append(to_string(options.getMarkovOrder())).append("l").append(to_string(options.getTrainingSentenceLimit())));
   }
 }
 
