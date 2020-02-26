@@ -15,6 +15,7 @@ Options::Options() {
   this->sentenceCount = 1;
   this->useCache = false;
   this->trainingFilePath = "";
+  this->trainingSentenceLimit = 0; // no limit
   this->port = 7799;  // unassigned port
   this->shouldRunAsServer = false;
 }
@@ -57,6 +58,12 @@ void Options::parseArguments(int argc, char *argv[]) {
     } else if (strcasecmp(argv[i], "-n") == 0) {
       if (i+1 < argc) {
         this->sentenceCount = atoi(argv[++i]);
+      }
+
+    // training sentence limit
+    } else if (strcasecmp(argv[i], "-l") == 0) {
+      if (i+1 < argc) {
+        this->trainingSentenceLimit = atoi(argv[++i]);
       }
 
     // Use cached files
@@ -110,6 +117,10 @@ bool Options::getUseCache() {
 
 string Options::getTrainingFilePath() {
   return this->trainingFilePath;
+}
+
+int Options::getTrainingSentenceLimit() {
+  return this->trainingSentenceLimit;
 }
 
 int Options::getPort() {

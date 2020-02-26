@@ -91,11 +91,12 @@ namespace Utils {
    * Combine words for higher than 1 markov order
    *
    * @param text entire input text
+   * @param trainingSentenceLimit cut off for how many sentences are used
    * @param markovOrder lookahead for markov model
    * @return 2D vector of words in sentences
    * @author Porter Glines 3/5/19
    */
-  vector< vector<string> > processTrainingSentences(string text, int markovOrder=1);
+  vector< vector<string> > processTrainingSentences(string text, int trainingSentenceLimit, int markovOrder=1);
 
   /**
    * Read from cache

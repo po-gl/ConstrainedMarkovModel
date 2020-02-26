@@ -98,6 +98,14 @@ public:
   string getTrainingFilePath();
 
   /**
+   * @brief Get the Training Sentence Limit object
+   * 
+   * @return int sentence limit
+   * @author Porter Glines 2/26/20
+   */
+  int getTrainingSentenceLimit();
+
+  /**
    * @brief Get the port object
    * 
    * @return int port number
@@ -123,6 +131,7 @@ private:
   int sentenceCount;
   bool useCache;
   string trainingFilePath;
+  int trainingSentenceLimit;
   int port;
   bool shouldRunAsServer;
 };

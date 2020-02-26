@@ -60,7 +60,7 @@ MarkovModel::MarkovModel(Options options) {
 
     // Process training sentences
     startTime = clock();
-    trainingSequences = Utils::processTrainingSentences(trainingText, options.getMarkovOrder());
+    trainingSequences = Utils::processTrainingSentences(trainingText, options.getTrainingSentenceLimit(), options.getMarkovOrder());
     Console::debugPrint("%-35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
 
     this->train(trainingSequences, options.getMarkovOrder());

@@ -127,7 +127,7 @@ string Utils::readInTrainingSentences(string filePath) {
 }
 
 
-vector<vector<string> > Utils::processTrainingSentences(string text, int markovOrder) {
+vector<vector<string> > Utils::processTrainingSentences(string text, int trainingSentenceLimit, int markovOrder) {
   vector<vector<string> > data;
 
   // Split the line along delimiters for sentences
@@ -176,6 +176,13 @@ vector<vector<string> > Utils::processTrainingSentences(string text, int markovO
       data.push_back(words);
     }
   }
+
+  if (trainingSentenceLimit != 0) { // if there is a sentence limit
+    vector<vector<string> > newData(trainingSentenceLimit);
+    std::copy(data.begin(), data.begin() + trainingSentenceLimit, newData.begin());
+    data = newData;
+  }
+
   return data;
 }
 
