@@ -168,7 +168,7 @@ private:
    * 
    * This is a pure virtual function
    */
-  virtual void applyConstraints(vector<string> constraint, int markovOrder = 1) = 0;  // TODO: make parameter generic
+  virtual void applyConstraints(vector<string> constraint) = 0;  // TODO: make parameter generic
 
   /**
    * @brief Remove nodes that violate arc consistency

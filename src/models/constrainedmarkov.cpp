@@ -51,7 +51,7 @@ void ConstrainedMarkovModel::train(MarkovModel model, vector<string> constraint)
 
   // Apply constraint by removing nodes that violate the constraint
   startTime = clock();
-  applyConstraints(constraint, markovOrder);
+  applyConstraints(constraint);
   Console::debugPrint("%-35s: %f\n", "Elapsed Time Applying Constraints", (float)(clock() - startTime)/CLOCKS_PER_SEC);
 
   // Enforce arc-consistency

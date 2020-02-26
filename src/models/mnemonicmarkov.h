@@ -24,10 +24,10 @@ public:
    * generate words starting with "T", "W", and "D" such as
    * "The weather door"
    * 
-   * @param array of words from a problem the mnemonic is trying to help with
+   * @param constraintSequence sequence of constraints
    * @author Porter Glines 1/21/19
    */
-  void applyConstraints(vector<string> constraint, int markovOrder);
+  void applyConstraints(vector<string> constraintSequence);
 };
 
 #endif

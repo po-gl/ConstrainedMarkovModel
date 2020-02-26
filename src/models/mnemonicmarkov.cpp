@@ -34,14 +34,21 @@ MnemonicMarkovModel::MnemonicMarkovModel(MarkovModel markovModel, string constra
 }
 
 
-void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, int markovOrder) {
+void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
+
+  // TODO: Separate these constraints into their own objects or functions to test
 
   // Constraints:
   // + First letter matches constraint string
-  // + Words must be certain length
-  // + Every other word must be certain length (last must be long)
-  // + Last word must proceed an <<END>>
+  // + Word cannot be a "stop word"
+  // - Words must be certain length
+  // - Every other word must be certain length (last must be long)
+  // - Last word must proceed an <<END>>
   // - Words must match first part of constraint if possible (relaxed)
+
+  // Assume only Markov order 1 for now (TODO: implement more Markov orders)
+  int markovOrder = 1;
+  // int markovOrder = this->getMarkovOrder();
 
   bool firstCharMatches;
   bool wordLengthMet;
@@ -50,47 +57,45 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
 
   int wordLen = 5;
 
-  int debugCount = 0;
-  int debugCountTot = 0;
+  int removedNodesCount = 0;
+  int totalNodesCount = 0;
 
-  for (int i = 0; i < constraintSentence.size(); i+=markovOrder) {
-    int m = ceil((double)i / markovOrder);
-    string constraintWord = constraintSentence[i];
+  // ** Parse constraints
 
-    // auto matrix = transitionMatrices[i];
-    for (auto node = transitionMatrices[m].begin(); node != transitionMatrices[m].end();) {
-      // vector<string> nodeSequence = Utils::split(node->first, "\\s");  // split on spaces
-      vector<string> nodeSequence = { node->first };
-      auto testfirst = node->first;
-      auto testsecond = node->second;
+  for (int i = 0; i < constraintSequence.size(); i+=markovOrder) {
+    int m = ceil((double)i / markovOrder); // iterator to use accounting for Markov order
 
-      if (nodeSequence.size() < markovOrder) {
-        node = transitionMatrices[m].erase(node);
-        debugCount++;
+    // Where word is a map from the word (first) to all possible proceeding words (second)
+    for (auto word = transitionMatrices[m].begin(); word != transitionMatrices[m].end();) {
+
+      // vector<string> wordsInLookahead = Utils::split(word->first, "\\s");  // split on spaces
+      vector<string> wordsInLookahead = { word->first }; // Assume only Markov order 1 so don't perform expensive split
+      auto testFirst = word->first;
+      auto testSecond = word->second;
+
+      if (wordsInLookahead.size() < markovOrder) {
+        word = transitionMatrices[m].erase(word);
+        removedNodesCount++;
         continue;
       }
 
       firstCharMatches = true;
-      for (int j = i, k = 0; j < constraintSentence.size() && k < nodeSequence.size(); j++, k++) {
-        if (constraintSentence[j][0] != nodeSequence[k][0]) {
-          firstCharMatches = false;
-          break;
-        }
-      }
-
-
       wordLengthMet = true;
-      for (int j = i, k = 0; j < constraintSentence.size() && k < nodeSequence.size(); j++, k++) {
-        if (nodeSequence[k].size() < wordLen) {
+      for (int j = i, k = 0; j < constraintSequence.size() && k < wordsInLookahead.size(); j++, k++) {
+
+        if (constraintSequence[j][0] != wordsInLookahead[k][0]) {
+          firstCharMatches = false;
+        }
+
+        if (wordsInLookahead[k].size() < wordLen) {
           wordLengthMet = false;
-          break;
         }
       }
 
-      proceedsEndSuitable = (i == constraintSentence.size() - 1);
+      proceedsEndSuitable = (i == constraintSequence.size() - 1);
       // Set to true if <<END>> is found in the node's proceeding map
       if (proceedsEndSuitable) {  // constraint for end node
-        proceedsEnd = (node->second.find(END) != node->second.end());
+        proceedsEnd = (word->second.find(END) != word->second.end());
       }
 
       // Remove nodes that don't satisfy the constraint
@@ -98,15 +103,15 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, in
       if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
 //      if (!firstCharMatches || !wordLengthMet) {
 //      if (!firstCharMatches) {
-        removedNodesbyConstraint[m].push_back(node->first);  // Save removed nodes
-        node = transitionMatrices[m].erase(node);
-        debugCount++;
+        this->removedNodesbyConstraint[m].push_back(word->first);  // Save removed nodes
+        word = this->transitionMatrices[m].erase(word);
+        removedNodesCount++;
       } else {
-        node++;
+        word++;
       }
-      debugCountTot++;
+      totalNodesCount++;
     }
   }
 
-  Console::debugPrint("%-35s: %d / %d\n", "Removed nodes", debugCount, debugCountTot);
+  Console::debugPrint("%-35s: %d / %d\n", "Removed nodes", removedNodesCount, totalNodesCount);
 }
