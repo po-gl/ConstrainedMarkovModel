@@ -123,6 +123,17 @@ namespace Utils {
    * @author Porter Glines 3/7/19
    */
   string getBasename(string filePath);
+
+  /**
+   * @brief returns true if the given word is a stop word
+   * 
+   * stop word as defined by the nltk python module
+   * 
+   * @param word 
+   * @return true 
+   * @return false 
+   */
+  bool isStopWord(string word);
 }
 
 #include "utils.inl"

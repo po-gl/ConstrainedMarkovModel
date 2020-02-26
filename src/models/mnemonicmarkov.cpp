@@ -55,6 +55,8 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
   bool proceedsEndSuitable;
   bool proceedsEnd = false;
 
+  bool isNotStopWord;
+
   int wordLen = 5;
 
   int removedNodesCount = 0;
@@ -81,6 +83,7 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
 
       firstCharMatches = true;
       wordLengthMet = true;
+      isNotStopWord = true;
       for (int j = i, k = 0; j < constraintSequence.size() && k < wordsInLookahead.size(); j++, k++) {
 
         if (constraintSequence[j][0] != wordsInLookahead[k][0]) {
@@ -89,6 +92,10 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
 
         if (wordsInLookahead[k].size() < wordLen) {
           wordLengthMet = false;
+        }
+
+        if (Utils::isStopWord(wordsInLookahead[k])) {
+          isNotStopWord = false;
         }
       }
 
@@ -100,9 +107,11 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
 
       // Remove nodes that don't satisfy the constraint
       // (letter in constraint string == first letter of word)
-      if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
-//      if (!firstCharMatches || !wordLengthMet) {
-//      if (!firstCharMatches) {
+      // if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
+      // if (!firstCharMatches || !isNotStopWord || (!proceedsEnd && proceedsEndSuitable)) {
+      // if (!firstCharMatches || !isNotStopWord) {
+      // if (!firstCharMatches || !wordLengthMet) {
+      if (!firstCharMatches) {
         this->removedNodesbyConstraint[m].push_back(word->first);  // Save removed nodes
         word = this->transitionMatrices[m].erase(word);
         removedNodesCount++;
