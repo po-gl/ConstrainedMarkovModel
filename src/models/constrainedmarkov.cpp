@@ -7,6 +7,7 @@
 
 #include "../utils.h"
 #include "../console.h"
+#include "../debug.h"
 #include "constrainedmarkov.h"
 #include "markov.h"
 
@@ -381,6 +382,14 @@ void ConstrainedMarkovModel::printDebugInfo(Options options) {
     Console::debugPrint("%d --> ", size);
   }
   Console::debugPrint("\n");
+
+  if (Debug::getIsDeepDebugEnabled()) {
+    // Print total solution count (expensive)
+    time_t startTime = clock();
+    int solutionCount = this->getTotalSolutionCount();
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Calculating TSC", (float)(clock() - startTime)/CLOCKS_PER_SEC);
+    Console::debugPrint("%-35s: %d\n", "Total Solution Count", solutionCount);
+  }
 }
 
 
@@ -395,6 +404,33 @@ void ConstrainedMarkovModel::printTransitionProbs() {
       }
       printf(" sum: >%f<", sum);
       printf("\n");
+    }
+  }
+}
+
+int ConstrainedMarkovModel::getTotalSolutionCount() {
+  // Perform recursive depth first search on matrices to count solutions
+  int count = 0;
+  getTotalSolutionCountImpl(START, 0, count);
+  return count;
+}
+
+void ConstrainedMarkovModel::getTotalSolutionCountImpl(string nodeStr, int matrixIndex, int& count) {
+  auto *currentMatrix = &transitionMatrices[matrixIndex];
+  // auto *nextMatrix = &transitionMatrices[matrixIndex+1];
+
+  // Find current node
+  auto node = currentMatrix->find(nodeStr);
+
+  auto *nextNodes = &node->second;
+  for (auto nextNode = nextNodes->begin(); nextNode != nextNodes->end(); nextNode++) {
+
+    // If next nodes are in final matrix, count them towards total solutions
+    if (matrixIndex+1 == this->transitionMatrices.size()-1) {
+      count++;
+    // Else continue down the matrices
+    } else {
+      this->getTotalSolutionCountImpl(nextNode->first, matrixIndex+1, count);
     }
   }
 }
