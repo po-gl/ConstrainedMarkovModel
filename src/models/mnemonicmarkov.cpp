@@ -67,6 +67,11 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
   for (int i = 0; i < constraintSequence.size(); i+=markovOrder) {
     int m = ceil((double)i / markovOrder); // iterator to use accounting for Markov order
 
+    // Wild character constraint
+    if (constraintSequence[i] == "*") {
+      continue;
+    }
+
     // Where word is a map from the word (first) to all possible proceeding words (second)
     for (auto word = transitionMatrices[m].begin(); word != transitionMatrices[m].end();) {
 
@@ -109,9 +114,9 @@ void MnemonicMarkovModel::applyConstraints(vector<string> constraintSequence) {
       // (letter in constraint string == first letter of word)
       // if (!firstCharMatches || !wordLengthMet || (!proceedsEnd && proceedsEndSuitable)) {
       // if (!firstCharMatches || !isNotStopWord || (!proceedsEnd && proceedsEndSuitable)) {
-      // if (!firstCharMatches || !isNotStopWord) {
+      if (!firstCharMatches || !isNotStopWord) {
       // if (!firstCharMatches || !wordLengthMet) {
-      if (!firstCharMatches) {
+      // if (!firstCharMatches) {
         this->removedNodesbyConstraint[m].push_back(word->first);  // Save removed nodes
         word = this->transitionMatrices[m].erase(word);
         removedNodesCount++;
