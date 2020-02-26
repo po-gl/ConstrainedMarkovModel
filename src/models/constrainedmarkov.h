@@ -116,6 +116,17 @@ public:
   void printDebugInfo(Options options);
 
   /**
+   * @brief Get the Total Solution Count of a trained model
+   * 
+   * This is a very time consuming depth first search of the model's
+   * structure
+   * 
+   * @return int count of solutions
+   * @author Porter Glines 2/26/20
+   */
+  int getTotalSolutionCount();
+
+  /**
    * @brief 
    * 
    */
@@ -254,17 +265,6 @@ private:
    * 
    */
   void initRemovedNodeArrays(int arraySize);
-
-  /**
-   * @brief Get the Total Solution Count of a trained model
-   * 
-   * This is a very time consuming depth first search of the model's
-   * structure
-   * 
-   * @return int count of solutions
-   * @author Porter Glines 2/26/20
-   */
-  int getTotalSolutionCount();
 
   /**
    * @brief Get the Total Solution Count of a trained model
