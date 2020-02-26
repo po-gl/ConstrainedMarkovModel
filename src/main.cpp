@@ -10,8 +10,8 @@
 #include "options.h"
 #include "console.h"
 #include "server.h"
-#include "markov.h"
-#include "mnemonicmarkov.h"
+#include "models/markov.h"
+#include "models/mnemonicmarkov.h"
 
 
 using namespace std;

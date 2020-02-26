@@ -6,8 +6,8 @@
 #include <random>
 
 #include "mnemonicmarkov.h"
-#include "console.h"
-#include "utils.h"
+#include "../console.h"
+#include "../utils.h"
 
 using namespace std;
 

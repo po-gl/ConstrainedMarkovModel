@@ -5,8 +5,8 @@
 #include <random>
 #include <time.h>
 
-#include "utils.h"
-#include "console.h"
+#include "../utils.h"
+#include "../console.h"
 #include "constrainedmarkov.h"
 #include "markov.h"
 

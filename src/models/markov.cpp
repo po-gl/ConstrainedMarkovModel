@@ -5,9 +5,9 @@
 #include <random>
 #include <time.h>
 
-#include "utils.h"
-#include "options.h"
-#include "console.h"
+#include "../utils.h"
+#include "../options.h"
+#include "../console.h"
 #include "markov.h"
 
 using namespace std;

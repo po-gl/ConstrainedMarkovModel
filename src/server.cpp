@@ -11,7 +11,7 @@
 #include "options.h"
 #include "console.h"
 #include "utils.h"
-#include "markov.h"
+#include "models/markov.h"
 #include "main.h"
 #include "threadqueue.h" 
 

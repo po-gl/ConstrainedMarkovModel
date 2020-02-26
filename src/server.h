@@ -7,7 +7,7 @@
 
 #include "threadqueue.h"
 #include "options.h"
-#include "markov.h"
+#include "models/markov.h"
 
 struct ConnectionData {
   int accepted_fd;

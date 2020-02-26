@@ -7,7 +7,7 @@
 #include <random>
 #include <boost/serialization/access.hpp>
 
-#include "options.h"
+#include "../options.h"
 
 using namespace std;
 

@@ -2,8 +2,8 @@
 #define MAIN_H
 
 #include "options.h"
-#include "markov.h"
-#include "mnemonicmarkov.h"
+#include "models/markov.h"
+#include "models/mnemonicmarkov.h"
 
 namespace Main {
 }

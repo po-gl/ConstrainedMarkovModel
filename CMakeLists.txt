@@ -13,9 +13,9 @@ include_directories(data)
 
 set(SOURCE
     src/main.cpp
-    src/markov.cpp
-    src/constrainedmarkov.cpp
-    src/mnemonicmarkov.cpp
+    src/models/markov.cpp
+    src/models/constrainedmarkov.cpp
+    src/models/mnemonicmarkov.cpp
     src/utils.cpp
     src/debug.cpp
     src/options.cpp
