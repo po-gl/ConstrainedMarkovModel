@@ -21,107 +21,6 @@ using namespace std;
 
 // TODO: Use log probs to prevent underflow for really large sentences
 
-MarkovModel Main::trainMarkov(Options options) {
-  time_t startTime; // used for debug timing
-
-  // Non-constrained Markov model
-  MarkovModel markovModel;
-
-  // Read/Pre-process training sequences
-  vector< vector<string> > trainingSequences;
-  if (options.getUseCache()) {
-    // Read in training sentences from cache
-    startTime = clock();
-    Utils::readFromCache(markovModel, Utils::getBasename(options.getTrainingFilePath()));
-    Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading From Cache", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-  }
-
-  // TODO: Rebuild cache reading it fails or if markov order is different
-  // Read/Process/Train model
-  if (markovModel.getProbabilityMatrix().empty()){
-    if (options.getUseCache())
-      Console::debugPrint("No cache found for file.\n");
-
-    // Read in training sentences
-    startTime = clock();
-    string trainingText = Utils::readInTrainingSentences(options.getTrainingFilePath());
-    Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-
-    // Process training sentences
-    startTime = clock();
-    trainingSequences = Utils::processTrainingSentences(trainingText, options.getMarkovOrder());
-    Console::debugPrint("%-35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
-
-    markovModel.train(trainingSequences, options.getMarkovOrder());
-
-    if (options.getUseCache())
-      // Write to cache
-      Utils::writeToCache(markovModel, Utils::getBasename(options.getTrainingFilePath()));
-  }
-
-  return markovModel;
-}
-
-
-MnemonicMarkovModel Main::trainConstrainedMarkov(Options options, MarkovModel markovModel, string constraint) {
-  time_t startTime; // used for debug timing
-
-  // Constrained Markov model
-  MnemonicMarkovModel constrainedModel;
-
-  // Train model (Apply constraints)
-  startTime = clock();
-  constrainedModel.train(markovModel, Utils::splitAndLower(constraint, "\\s,"));
-  Console::debugPrint("%-35s: %f\n", "Elapsed Training Time", (float)(clock() - startTime) / CLOCKS_PER_SEC);
-
-  return constrainedModel;
-}
-
-
-vector<vector<string> > Main::generateSentences(Options options, MnemonicMarkovModel model) {
-  time_t startTime; // used for debug timing
-
-  // Generate sentences
-  startTime = clock();
-  vector<vector<string> > generatedSentences;
-  generatedSentences.reserve(options.getSentenceCount());
-  for (int i = 0; i < options.getSentenceCount(); i++) {
-    generatedSentences.push_back(model.generateSentence());
-  }
-  Console::debugPrint("\n%-35s: %f\n", "Elapsed Sentence(s) Gen Time", (float)(clock() - startTime) / CLOCKS_PER_SEC);
-
-  // Print generated sentences with probabilities (debug)
-  Console::debugPrint("%s  (%d)\n", "Generated Sentences", options.getSentenceCount());
-  Console::debugPrint("%-10s: %s\n", "(prob)", "(sentence)");
-  for (const auto &sentence : generatedSentences) {
-    Console::debugPrint("%-10f: ", model.getSentenceProbability(sentence));
-
-    for (const string &word : sentence) {
-      Console::debugPrint("%s ", word.c_str());
-    }
-    Console::debugPrint("\n");
-  }
-
-  return generatedSentences;
-}
-
-
-void Main::printMarkovDebugInfo(Options options, MnemonicMarkovModel model) {
-  // Print markov order (debug)
-  Console::debugPrint("\n%-35s: %d\n", "Markov Order", options.getMarkovOrder());
-
-  // Print training sequence count
-  Console::debugPrint("%-35s: %d\n", "Training Sentence Count", model.getTrainingSequences().size());
-
-  // Print matrix sizes (debug)
-  Console::debugPrint("%-35s: ", "Transition Matrix sizes");
-  vector<int> sizes = model.getTransitionMatricesSizes();
-  for (auto size : sizes) {
-    Console::debugPrint("%d --> ", size);
-  }
-  Console::debugPrint("\n");
-}
-
 
 int runAsCommandLineTool(Options options) {
   // Check options
@@ -137,14 +36,14 @@ int runAsCommandLineTool(Options options) {
   }
 
   // Train non-constrained Markov model
-  auto markovModel = Main::trainMarkov(options);
+  auto markovModel = MarkovModel(options);
 
   for (const auto &constraint : options.getConstraints()) {
     Console::debugPrint("%-35s: %s\n", "Constraint", constraint.c_str());
 
-    auto model = Main::trainConstrainedMarkov(options, markovModel, constraint);
-    Main::printMarkovDebugInfo(options, model);
-    auto generatedSentences = Main::generateSentences(options, model);
+    auto model = MnemonicMarkovModel(markovModel, Utils::cleanConstraint(constraint), options);
+    model.printDebugInfo(options);
+    auto generatedSentences = model.generateSentences(options);
 
     // Print to standard output
     for (const auto &sentence : generatedSentences) {

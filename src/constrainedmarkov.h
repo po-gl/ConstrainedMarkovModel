@@ -47,6 +47,15 @@ public:
   vector<string> generateSentence();
 
   /**
+   * @brief Generates a sentence
+   * 
+   * @param options program options
+   * @return vector<vector<string> > array of generated sentences
+   * @author Porter Glines 2/26/20
+   */
+  vector<vector<string> > generateSentences(Options options);
+
+  /**
    * @brief Get the probability of a specific sentence being generated
    * 
    * multiplies the probabilities between each word to get the total
@@ -84,6 +93,27 @@ public:
    * @author Porter Glines 5/24/19
    */
   vector< vector<string> > getTrainingSequences();
+
+  /**
+   * @brief Get the Markov Order object
+   * 
+   * @return int markov order (lookahead) of model
+   * @author Porter Glines 2/26/20
+   */
+  int getMarkovOrder() { return markovOrder; }
+
+  /**
+   * @brief Print debug information about the model
+   * 
+   * information includes
+   * - Markov order
+   * - training sentence count
+   * - transition matrices sizes
+   * 
+   * @param options program options
+   * @author Porter Glines 2/26/20
+   */
+  void printDebugInfo(Options options);
 
   /**
    * @brief 

@@ -212,6 +212,33 @@ vector<string> ConstrainedMarkovModel::generateSentence() {
   return sentence;
 }
 
+vector<vector<string> > ConstrainedMarkovModel::generateSentences(Options options) {
+  time_t startTime; // used for debug timing
+
+  // Generate sentences
+  startTime = clock();
+  vector<vector<string> > generatedSentences;
+  generatedSentences.reserve(options.getSentenceCount());
+  for (int i = 0; i < options.getSentenceCount(); i++) {
+    generatedSentences.push_back(this->generateSentence());
+  }
+  Console::debugPrint("\n%-35s: %f\n", "Elapsed Sentence(s) Gen Time", (float)(clock() - startTime) / CLOCKS_PER_SEC);
+
+  // Print generated sentences with probabilities (debug)
+  Console::debugPrint("%s  (%d)\n", "Generated Sentences", options.getSentenceCount());
+  Console::debugPrint("%-10s: %s\n", "(prob)", "(sentence)");
+  for (const auto &sentence : generatedSentences) {
+    Console::debugPrint("%-10f: ", this->getSentenceProbability(sentence));
+
+    for (const string &word : sentence) {
+      Console::debugPrint("%s ", word.c_str());
+    }
+    Console::debugPrint("\n");
+  }
+
+  return generatedSentences;
+}
+
 
 double ConstrainedMarkovModel::getSentenceProbability(vector<string> sentence) {
   double prob = 1.0;
@@ -334,6 +361,23 @@ vector<int> ConstrainedMarkovModel::getTransitionMatricesSizes() {
 
 vector< vector<string> > ConstrainedMarkovModel::getTrainingSequences() {
   return this->trainingSequences;
+}
+
+
+void ConstrainedMarkovModel::printDebugInfo(Options options) {
+  // Print markov order (debug)
+  Console::debugPrint("\n%-35s: %d\n", "Markov Order", this->getMarkovOrder());
+
+  // Print training sequence count
+  Console::debugPrint("%-35s: %d\n", "Training Sentence Count", this->getTrainingSequences().size());
+
+  // Print matrix sizes (debug)
+  Console::debugPrint("%-35s: ", "Transition Matrix sizes");
+  vector<int> sizes = this->getTransitionMatricesSizes();
+  for (auto size : sizes) {
+    Console::debugPrint("%d --> ", size);
+  }
+  Console::debugPrint("\n");
 }
 
 

@@ -6,6 +6,9 @@
 class MnemonicMarkovModel : public ConstrainedMarkovModel {
 public:
   MnemonicMarkovModel();
+
+  MnemonicMarkovModel(MarkovModel markovModel, string constraint, Options options);
+
   ~MnemonicMarkovModel() {};
 
 

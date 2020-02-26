@@ -31,7 +31,8 @@ Server::Server(int port, Options options, int threadCount, int bufferSize) {
 void Server::startServerLoop() {
   Console::debugPrint("Starting Server Loop\n");
   // Train non-constrained Markov model
-  auto markovModel = Main::trainMarkov(this->options);
+  // auto markovModel = Main::trainMarkov(this->options);
+  auto markovModel = MarkovModel(this->options);
   this->markovModel = markovModel;
 
   Console::debugPrint("Creating Socket on port %d\n", this->port);
@@ -72,10 +73,9 @@ void Server::performWork(int threadID, bool *shouldStop,
 
     Console::debugPrint("Thread %d working on constraint: %s\n", threadID, Utils::cleanConstraint(data.constraint).c_str());
 
-    auto model = Main::trainConstrainedMarkov(*options, *markovModel, Utils::cleanConstraint(data.constraint));
-    Main::printMarkovDebugInfo(*options, model);
-
-    auto generatedSentences = Main::generateSentences(*options, model);
+    auto model = MnemonicMarkovModel(*markovModel, Utils::cleanConstraint(data.constraint), *options);
+    model.printDebugInfo(*options);
+    auto generatedSentences = model.generateSentences(*options);
 
 
     // Send sentences + data back to client

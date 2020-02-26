@@ -19,6 +19,21 @@ MnemonicMarkovModel::MnemonicMarkovModel() {
 }
 
 
+MnemonicMarkovModel::MnemonicMarkovModel(MarkovModel markovModel, string constraint, Options options) {
+  // Initialize random
+  random_device rd;
+  randGenerator = mt19937(rd());
+  randDistribution = uniform_real_distribution<double>(0.0, 1.0);
+
+  time_t startTime; // used for debug timing
+
+  // Train model (Apply constraints)
+  startTime = clock();
+  this->train(markovModel, Utils::splitAndLower(constraint, "\\s,"));
+  Console::debugPrint("%-35s: %f\n", "Elapsed Training Time", (float)(clock() - startTime) / CLOCKS_PER_SEC);
+}
+
+
 void MnemonicMarkovModel::applyConstraints(vector<string> constraintSentence, int markovOrder) {
 
   // Constraints:

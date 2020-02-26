@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "utils.h"
+#include "options.h"
 #include "console.h"
 #include "markov.h"
 
@@ -23,6 +24,53 @@ MarkovModel::MarkovModel() {
   this->trainingSequences = vector< vector<string> >();
   this->transitionProbs = unordered_map< string, unordered_map<string, double> >();
 }
+
+
+MarkovModel::MarkovModel(Options options) {
+  // Initialize random
+  random_device rd;
+  randGenerator = mt19937(rd());
+  randDistribution = uniform_real_distribution<double>(0.0, 1.0);
+
+  this->markovOrder = 0;
+  this->trainingSequences = vector< vector<string> >();
+  this->transitionProbs = unordered_map< string, unordered_map<string, double> >();
+
+  time_t startTime; // used for debug timing
+
+    // Read/Pre-process training sequences
+  vector< vector<string> > trainingSequences;
+  if (options.getUseCache()) {
+    // Read in training sentences from cache
+    startTime = clock();
+    Utils::readFromCache(*this, Utils::getBasename(options.getTrainingFilePath()));
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading From Cache", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+  }
+
+  // TODO: Rebuild cache reading it fails or if markov order is different
+  // Read/Process/Train model
+  if (this->getProbabilityMatrix().empty()){
+    if (options.getUseCache())
+      Console::debugPrint("No cache found for file.\n");
+
+    // Read in training sentences
+    startTime = clock();
+    string trainingText = Utils::readInTrainingSentences(options.getTrainingFilePath());
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Reading Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+
+    // Process training sentences
+    startTime = clock();
+    trainingSequences = Utils::processTrainingSentences(trainingText, options.getMarkovOrder());
+    Console::debugPrint("%-35s: %f\n", "Elapsed Time Processing Data", (float) (clock() - startTime) / CLOCKS_PER_SEC);
+
+    this->train(trainingSequences, options.getMarkovOrder());
+
+    if (options.getUseCache())
+      // Write to cache
+      Utils::writeToCache(this, Utils::getBasename(options.getTrainingFilePath()));
+  }
+}
+
 
 void MarkovModel::train(vector< vector<string> > trainingSequences, int markovOrder) {
 

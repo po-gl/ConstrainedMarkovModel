@@ -7,6 +7,8 @@
 #include <random>
 #include <boost/serialization/access.hpp>
 
+#include "options.h"
+
 using namespace std;
 
 
@@ -17,6 +19,9 @@ class MarkovModel {
 public:
   
   MarkovModel();
+
+  MarkovModel(Options options);
+
   ~MarkovModel() {};
 
   /**
