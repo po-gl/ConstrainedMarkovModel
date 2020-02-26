@@ -37,6 +37,7 @@ MarkovModel Main::trainMarkov(Options options) {
   }
 
   // TODO: Rebuild cache reading it fails or if markov order is different
+  // Read/Process/Train model
   if (markovModel.getProbabilityMatrix().empty()){
     if (options.getUseCache())
       Console::debugPrint("No cache found for file.\n");
