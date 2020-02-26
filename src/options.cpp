@@ -8,6 +8,7 @@
 Options::Options() {
   // Set default options
   this->debug = false;
+  this->deepDebug = false;
   this->help = false;
   this->constraints = vector<string>();
   this->markovOrder = 1;
@@ -23,6 +24,14 @@ void Options::parseArguments(int argc, char *argv[]) {
     // Debug flag
     if (strcasecmp(argv[i], "--debug") == 0 || strcasecmp(argv[i], "-d") == 0) {
       Debug::setDebugEnabled(true);
+      this->debug = true;
+
+    // DeepDebug (Slow) flag
+    } else if (strcasecmp(argv[i], "--deepdebug") == 0 || strcasecmp(argv[i], "-dd") == 0) {
+      Debug::setDebugEnabled(true);
+      Debug::setDeepDebugEnabled(true);
+      this->debug = true;
+      this->deepDebug = true;
 
     // Help
     } else if (strcasecmp(argv[i], "help") == 0 || strcasecmp(argv[i], "--help") == 0 || strcasecmp(argv[i], "-h") == 0) {
@@ -73,6 +82,10 @@ void Options::parseArguments(int argc, char *argv[]) {
 
 bool Options::getDebug() {
   return this->debug;
+}
+
+bool Options::getDeepDebug() {
+  return this->deepDebug;
 }
 
 bool Options::getHelp() {

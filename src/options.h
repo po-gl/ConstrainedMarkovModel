@@ -42,6 +42,14 @@ public:
   bool getDebug();
 
   /**
+   * @brief Get the Deep Debug object (Slow)
+   * 
+   * @return bool deep debug
+   * @author Porter Glines 5/19/19 
+   */
+  bool getDeepDebug();
+
+  /**
    * @brief Get the Help object
    * 
    * @return bool help
@@ -108,6 +116,7 @@ public:
 
 private:
   bool debug;
+  bool deepDebug;
   bool help;
   vector<string> constraints;
   int markovOrder;
