@@ -111,6 +111,9 @@ void ConstrainedMarkovModel::removeDeadNodes() {
       if (prevWordMap->empty()) {
         removedNodesbyArcConsistency[i-1].push_back(iter->first);  // Save removed nodes
         iter = prevWordMatrix->erase(iter);
+      // Remove start nodes; a start matrix will be added after
+      } else if (iter->first.compare(START) == 0) {
+          iter = prevWordMatrix->erase(iter);
       } else {
         iter++;
       }
